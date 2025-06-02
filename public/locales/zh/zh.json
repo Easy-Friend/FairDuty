@@ -21,7 +21,7 @@
   "selectedUnavailableDatesPrefix": "已选: ",
   "loadingMessage": "生成中...",
   "generateButton": "生成排班表!",
-  "remakeButtonLabel": "🔄 重新生成",
+  "remakeButtonLabel": "🔄重新生成",
   "generatingButton": "生成中...",
   "errorOccurred": "发生错误!",
   "errorDateRangeMissing": "请选择日期范围。",

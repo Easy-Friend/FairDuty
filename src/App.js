@@ -569,7 +569,7 @@ function App() {
         </div>
       )}
 
-      <div className="app-store-links-container" 
+      {/* <div className="app-store-links-container" 
         style={{ 
           textAlign: 'center', 
           padding: '30px 20px', 
@@ -585,7 +585,7 @@ function App() {
             href="YOUR_GOOGLE_PLAY_STORE_URL_HERE" // 여기에 실제 구글 플레이 스토어 URL을 넣어주세요.
             target="_blank" 
             rel="noopener noreferrer" 
-            className="store-button play-store-button" // CSS 스타일링을 위한 클래스
+            className="store-button play-store-button" 
           >
             {t('getApp.googlePlay', 'Google Play에서 받기')}
           </a>
@@ -593,12 +593,12 @@ function App() {
             href="YOUR_APPLE_APP_STORE_URL_HERE" // 여기에 실제 애플 앱 스토어 URL을 넣어주세요.
             target="_blank" 
             rel="noopener noreferrer" 
-            className="store-button app-store-button" // CSS 스타일링을 위한 클래스
+            className="store-button app-store-button" 
           >
             {t('getApp.appStore', 'App Store에서 다운로드')}
           </a>
         </div>
-      </div>
+      </div> */}
 
     </div>
   );
