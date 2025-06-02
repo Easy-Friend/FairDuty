@@ -1,0 +1,393 @@
+/* src/App.css */
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background-color: #f9fafb; /* 약간의 배경색 */  
+  color: #374151;
+}
+
+.app-container {
+  max-width: 1200px; /* 전체 컨테이너 최대 너비 */
+  margin: 0 auto; /* 가운데 정렬 */
+  padding: 20px;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.app-header h1 {
+  font-size: 2em; /* Tailwind: text-3xl */
+  font-weight: bold; /* Tailwind: font-bold */
+  color: #1f2937; /* Tailwind: text-gray-700 */
+}
+
+/* ----- 설정 영역 레이아웃 ----- */
+.settings-layout {
+  display: flex; /* Flexbox를 사용하여 좌우 배치 */
+  flex-wrap: wrap; /* 화면 작을 때 줄바꿈 허용 (선택사항) */
+  gap: 24px; /* Tailwind: gap-6 */
+  margin-bottom: 30px;
+}
+
+.panel {
+  background-color: #f3f4f6; /* Tailwind: bg-gray-100 또는 bg-gray-50 */
+  padding: 24px; /* Tailwind: p-6 */
+  border-radius: 8px; /* Tailwind: rounded-lg */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Tailwind: shadow */
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Tailwind: space-y-6 */
+}
+
+.left-panel {
+  flex: 1; /* flex-grow: 1, flex-shrink: 1, flex-basis: 0% */
+  min-width: 300px; /* 최소 너비 (줄바꿈 시 참고) */
+}
+
+.right-panel {
+  flex: 1; /* 50:50 비율을 위해 flex: 1 (또는 1.5, 2 등으로 비율 조정 가능) */
+  min-width: 300px;
+}
+
+/* 화면이 768px (md)보다 작을 때 세로로 쌓이도록 (선택사항) */
+@media (max-width: 767px) {
+  .settings-layout {
+    flex-direction: column;
+  }
+}
+
+
+/* ----- 각 설정 그룹 스타일 ----- */
+.setting-group {
+  margin-bottom: 15px; /* 그룹 간 여백 */
+}
+
+.label, .sub-header, .person-name-label {
+  display: block;
+  font-weight: 600; /* Tailwind: font-semibold */
+  margin-bottom: 8px; /* Tailwind: mb-1 또는 mb-2 */
+  color: #1f2937;
+}
+
+.sub-header {
+  font-size: 1.125em; /* Tailwind: text-lg */
+  margin-top: 10px; /* 위쪽 추가 여백 */
+}
+
+
+/* ----- 입력 필드 스타일 ----- */
+.date-picker-input,
+.number-input,
+.text-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d1d5db; /* Tailwind: border-gray-300 */
+  border-radius: 4px; /* Tailwind: rounded */
+  box-sizing: border-box; /* padding과 border가 width에 포함되도록 */
+}
+
+.date-picker-input:focus,
+.number-input:focus,
+.text-input:focus {
+  border-color: #3b82f6; /* Tailwind: focus:ring-blue-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4); /* Tailwind: focus:ring-2 */
+  outline: none;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  margin-left: 8px; /* Tailwind: ml-2 (mr-2였던 것을 label 위치에 따라 변경) */
+  font-weight: normal;
+  font-size: 0.875em; /* Tailwind: text-sm */
+}
+
+/* DatePicker 인라인 달력 너비 조정 */
+.full-width-datepicker .react-datepicker {
+  width: 100% !important;
+}
+.full-width-datepicker .react-datepicker__month-container {
+  width: 100% !important;
+}
+
+.selected-dates-info {
+  margin-top: 8px;
+  font-size: 0.75em; /* Tailwind: text-xs */
+  color: #4b5563; /* Tailwind: text-gray-600 */
+}
+
+/* 사람 목록 */
+.people-list {
+  margin-top: 8px;
+}
+.person-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 8px;
+  border: 1px solid #e5e7eb; /* Tailwind: border-gray-200 */
+  border-radius: 4px;
+  margin-bottom: 4px;
+  font-size: 0.875em;
+}
+.remove-button {
+  color: #ef4444; /* Tailwind: text-red-500 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75em;
+}
+.remove-button:hover {
+  color: #dc2626; /* Tailwind: hover:text-red-700 */
+}
+
+/* 당직자별 불가 날짜 설정 */
+.unavailable-dates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 반응형 그리드 */
+  gap: 16px; /* Tailwind: gap-4 */
+  max-height: 400px; /* 기존 스타일 유지 */
+  overflow-y: auto; /* 기존 스타일 유지 */
+}
+
+.person-unavailable-picker {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.unavailable-dates-text {
+  font-weight: 500;
+  color: #ef4444; /* 빨간색 계열 */
+}
+.no-dates-text {
+  color: #9ca3af; /* 회색 계열 */
+}
+
+/* DatePicker 하이라이트 (App.css에서 제어하기 위해 DatePicker의 prop 수정 필요) */
+.react-datepicker__day.highlighted-extra-holiday {
+  background-color: #fef9c3 !important; /* 연한 노랑, Tailwind: bg-yellow-100 or 200 */
+  border-radius: 50% !important;
+}
+.react-datepicker__day.highlighted-unavailable-date {
+  background-color: #fecaca !important;
+  color: #b91c1c !important; /* Tailwind: text-red-700 */
+  font-weight: bold !important;
+  border-radius: 50% !important;
+}
+
+
+/* ----- 생성 버튼 ----- */
+.generate-button-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.generate-button {
+  background-color: #2563eb; /* Tailwind: bg-blue-600 */
+  color: white;
+  font-weight: bold;
+  padding: 12px 24px; /* Tailwind: py-3 px-6 */
+  border-radius: 8px; /* Tailwind: rounded-lg */
+  border: none;
+  cursor: pointer;
+  font-size: 1.125em; /* Tailwind: text-lg */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: background-color 0.15s ease-in-out;
+}
+.generate-button:hover {
+  background-color: #1d4ed8; /* Tailwind: hover:bg-blue-700 */
+}
+.generate-button:disabled {
+  background-color: #9ca3af; /* Tailwind: disabled:bg-gray-400 */
+  cursor: not-allowed;
+}
+
+.buttons-container {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+
+.download-button {
+  background-color: #2563eb; /* Tailwind: bg-blue-600 */
+  color: white;
+  font-weight: bold;
+  padding: 12px 24px; /* Tailwind: py-3 px-6 */
+  border-radius: 8px; /* Tailwind: rounded-lg */
+  border: none;
+  cursor: pointer;
+  font-size: 1.125em; /* Tailwind: text-lg */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: background-color 0.15s ease-in-out;
+}
+.download-button:hover:not([disabled]) {
+  background-color: #1d4ed8; 
+}
+
+.download-button:disabled {
+  background-color: #9ca3af; /* Tailwind: disabled:bg-gray-400 */
+  cursor: not-allowed;
+}
+
+/* ----- 에러 메시지 ----- */
+.error-message-box {
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #fee2e2; /* Tailwind: bg-red-100 */
+  color: #b91c1c; /* Tailwind: text-red-700 */
+  border: 1px solid #fca5a5; /* Tailwind: border-red-400 */
+  border-radius: 8px;
+  text-align: center;
+}
+.error-message-box p:first-child {
+  font-weight: 600;
+}
+
+/* ----- 결과 영역 ----- */
+.results-container {
+  margin-top: 30px;
+}
+.results-header {
+  font-size: 1.5em; /* Tailwind: text-2xl */
+  font-weight: 600;
+  margin-bottom: 24px; /* Tailwind: mb-6 */
+  text-align: center;
+  color: #1f2937;
+}
+.calendar-wrapper, .summary-wrapper {
+  background-color: white;
+  padding: 16px 24px; /* Tailwind: p-4 sm:p-6 */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Tailwind: shadow-lg */
+}
+.summary-wrapper {
+  max-width: 672px; /* Tailwind: max-w-2xl */
+  margin: 0 auto; /* 가운데 정렬 */
+}
+
+/* 달력 테이블 스타일 */
+.calendar-month {
+  margin-bottom: 30px;
+}
+.calendar-month h3 {
+  font-size: 1.25em; /* Tailwind: text-xl */
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.duty-calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e5e7eb; /* Tailwind: border-gray-300 */
+}
+.duty-calendar-table th, .duty-calendar-table td {
+  border: 1px solid #e5e7eb;
+  padding: 4px 8px; /* Tailwind: px-1 py-1 또는 px-2 py-1 */
+  text-align: center;
+  vertical-align: top;
+}
+.duty-calendar-table th {
+  background-color: #f3f4f6; /* Tailwind: bg-gray-100 */
+  padding: 8px; /* Tailwind: py-2 */
+  font-weight: normal;
+}
+.duty-calendar-table th.sunday-header { color: #ef4444; } /* Tailwind: text-red-600 */
+.duty-calendar-table th.saturday-header { color: #3b82f6; } /* Tailwind: text-blue-600 */
+
+.calendar-day-cell {
+  height: 100px; /* Tailwind: h-24 md:h-28 등은 반응형 높이, 여기선 고정 */
+}
+.calendar-day-cell.weekend-cell { background-color: #f9fafb; } /* Tailwind: bg-gray-50 */
+.calendar-day-cell.extra-holiday-cell { background-color: #fef3c7; } /* Tailwind: bg-yellow-100 */
+.calendar-day-cell.empty-cell { background-color: #f9fafb; }
+
+.day-number {
+  font-weight: 600; /* Tailwind: font-semibold */
+  font-size: 0.875em; /* Tailwind: text-sm md:text-base */
+}
+.day-number.red-text { color: #ef4444; } /* 날짜 숫자 빨갛게 */
+
+.duty-personnel-list {
+  font-size: 0.75em; /* Tailwind: text-xs md:text-sm */
+  margin-top: 4px;
+}
+.duty-person {
+  background-color: #dbeafe; /* Tailwind: bg-blue-100 */
+  color: #000000; /* Tailwind: text-blue-800 */
+  border-radius: 4px; /* Tailwind: rounded */
+  padding: 2px 6px; /* Tailwind: px-1.5 py-0.5 */
+  margin-bottom: 2px; /* Tailwind: my-0.5 (y축 마진) */
+  display: inline-block; /* 여러 명일 때 옆으로 흐르도록 */
+  margin-right: 2px;
+}
+
+/* 요약 리스트 */
+.summary-list {
+  list-style: none;
+  padding: 0;
+}
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #f9fafb; /* Tailwind: bg-gray-50 */
+  border-radius: 6px; /* Tailwind: rounded-md */
+  margin-bottom: 8px;
+}
+.summary-item span:first-child {
+  font-weight: 500; /* Tailwind: font-medium */
+}
+.summary-item span:last-child {
+  font-size: 0.875em; /* Tailwind: text-sm */
+  color: #4b5563; /* Tailwind: text-gray-600 */
+}
+
+.app-store-links-container {
+  text-align: center;
+  padding: 30px 20px;
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+}
+
+.app-store-links-container h3 {
+  margin-bottom: 10px;
+}
+
+.app-store-links-container p {
+  margin-bottom: 20px;
+  font-size: 0.95em;
+  color: #444;
+}
+
+.store-button {
+  display: inline-block;
+  margin: 5px;
+  padding: 12px 24px; /* 패딩 조정 */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: opacity 0.2s;
+  font-size: 1em; /* 폰트 크기 조정 */
+}
+
+.store-button:hover {
+  opacity: 0.85;
+}
+
+.play-store-button {
+  background-color: #4CAF50; /* 구글 플레이 색상 */
+}
+
+.app-store-button {
+  background-color: #007AFF; /* 애플 앱스토어 색상 */
+}
