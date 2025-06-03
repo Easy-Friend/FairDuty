@@ -437,7 +437,7 @@ function App() {
               id="dutyPerDayInput"
               type="number"
               value={dutyPerDay}
-              onChange={(e) => setDutyPerDay(Math.max(1, parseInt(e.target.value, 10) || 1))}
+              onChange={(e) => setDutyPerDay(e.target.value)}
               className="number-input"
             />
           </div>
