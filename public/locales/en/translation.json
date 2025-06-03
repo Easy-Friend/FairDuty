@@ -44,5 +44,6 @@
   "getApp.description": "Generate schedules for extended periods (6 weeks → 1 year) and manage more personnel (10 → 50 people).",
   "getApp.googlePlay": "Get it on Google Play",
   "getApp.appStore": "Download on the App Store",
-  "errors.maxPeopleReached": "You can add a maximum of 10 people."
+  "errors.maxPeopleReached": "You can add a maximum of 10 people.",
+  "confirmations.regenerateSchedule": "Any unsaved schedule will be lost. Do you want to proceed?"  
 }
