@@ -130,6 +130,14 @@ function App() {
       }
     }
 
+    const parsedDutyPerDay = parseInt(dutyPerDay, 10);
+    if (isNaN(parsedDutyPerDay) || parsedDutyPerDay < 1) {
+      setError(t('errors.dutyPerDayInvalid', '하루 당직 인원은 1명 이상이어야 합니다.'));
+      // 선택 사항: 유효하지 않은 값 입력 시 상태를 기본값 '1'로 되돌릴 수 있습니다.
+      // setDutyPerDay('1'); 
+      return; // 함수 종료
+    }
+
     if (!startDate || !endDate) {
       setError(t('errors.dateRangeMissing'));
       return;
@@ -431,7 +439,6 @@ function App() {
               value={dutyPerDay}
               onChange={(e) => setDutyPerDay(Math.max(1, parseInt(e.target.value, 10) || 1))}
               className="number-input"
-              min="1"
             />
           </div>
 
@@ -585,7 +592,7 @@ function App() {
         </div>
       )}
 
-      <div className="app-store-links-container" 
+      {/* <div className="app-store-links-container" 
         style={{ 
           textAlign: 'center', 
           padding: '30px 20px', 
@@ -614,7 +621,7 @@ function App() {
             {t('getApp.appStore', 'App Store에서 다운로드')}
           </a>
         </div>
-      </div> 
+      </div> */}
 
     </div>
   );
