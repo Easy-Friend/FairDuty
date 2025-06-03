@@ -6,7 +6,20 @@ import random
 import numpy as np # numpy 추가 (분산 계산용)
 
 app = Flask(__name__)
-CORS(app)
+CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
+LOCALHOST_DEV_URL = "http://localhost:3000"
+
+allowed_origins = [
+    CLOUDFLARE_PAGES_URL,
+    LOCALHOST_DEV_URL
+]
+
+CORS(app, 
+     origins=allowed_origins,  # 허용할 출처 목록 전달
+     supports_credentials=True, # 자격 증명(쿠키 등)을 포함한 요청 허용 여부
+     methods=["GET", "POST", "OPTIONS"], # 허용할 HTTP 메소드 (필요에 따라 추가/수정)
+     allow_headers=["Content-Type", "Authorization"] # 허용할 요청 헤더 (필요에 따라 추가/수정)
+)
 
 # --- 기존 generate_dates_revised 함수 (주말 및 사용자 지정 공휴일만 처리) ---
 def generate_dates_revised(start_str, end_str, extra_holidays_set):
@@ -268,7 +281,11 @@ def create_schedule_route():
         return jsonify({"error": status_message}), 500
 
 
+import os
+
 if __name__ == '__main__':
-    # 로깅 레벨 설정 (Flask의 기본 로거 사용)
-    app.logger.setLevel("INFO") # DEBUG, INFO, WARNING, ERROR, CRITICAL
-    app.run(debug=True, port=5000)
+    # Heroku는 PORT 환경 변수를 사용
+    # port = int(os.environ.get('PORT', 5000)) 
+    # app.logger.setLevel("INFO") # DEBUG, INFO, WARNING, ERROR, CRITICAL
+    port = int(os.environ.get('PORT', 5000)) 
+    app.run(host='0.0.0.0', port=port, debug=False)

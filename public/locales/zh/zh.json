@@ -44,5 +44,6 @@
   "getApp.description": "可生成更长周期的排班表（6周 → 1年）并管理更多人员（10人 → 50人）。",
   "getApp.googlePlay": "在 Google Play 上获取",
   "getApp.appStore": "在 App Store 上下载",
-  "errors.maxPeopleReached": "最多只能添加10人。"
+  "errors.maxPeopleReached": "最多只能添加10人。",
+  "confirmations.regenerateSchedule": "未下载的排班表将会丢失。您确定要继续吗？"
 }
