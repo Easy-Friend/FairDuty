@@ -585,16 +585,16 @@ function App() {
         </div>
       )}
 
-      {/* <div className="app-store-links-container" 
+      <div className="app-store-links-container" 
         style={{ 
           textAlign: 'center', 
           padding: '30px 20px', 
           marginTop: '40px', 
           borderTop: '1px solid #eee' 
         }}>
-        <h3 style={{ marginBottom: '10px' }}>{t('getApp.title', '모든 기능을 경험하세요!')}</h3>
+        <h3 style={{ marginBottom: '10px' }}>{t('getApp.title', '"더 길게, 더 많은 사람" 기능을 원하신다면... 유료앱으로! (서버가 힘들어해요...)')}</h3>
         <p style={{ marginBottom: '20px', fontSize: '0.95em', color: '#444' }}>
-          {t('getApp.description', '더 많은 고급 기능과 편리한 모바일 경험을 원하시면 지금 바로 앱을 다운로드하세요.')}
+          {t('getApp.description', '당신의 $0.99 후원은 훗날 자라서 튼튼한 서버가 됩니다')}
         </p>
         <div>
           <a 
@@ -614,7 +614,7 @@ function App() {
             {t('getApp.appStore', 'App Store에서 다운로드')}
           </a>
         </div>
-      </div> */}
+      </div> 
 
     </div>
   );
