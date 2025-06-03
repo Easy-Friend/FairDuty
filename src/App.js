@@ -134,6 +134,15 @@ function App() {
     setLoading(true);
     setError(null);
     setScheduleResult(null);
+
+    const API_BASE_URL = process.env.REACT_APP_API_URL; // 환경 변수 사용
+    if (!API_BASE_URL) {
+      console.error("API URL is not defined. Check REACT_APP_API_URL environment variable.");
+      setError("API 설정 오류: 서버 주소가 정의되지 않았습니다."); // 사용자에게 알림
+      setLoading(false);
+      return;
+    }    
+
     const payload = {
       startDate: formatDateToYYYYMMDD(startDate), // 수정된 부분
       endDate: formatDateToYYYYMMDD(endDate),     // 수정된 부분
@@ -154,7 +163,7 @@ function App() {
     // ▲▲▲ 디버깅 코드 끝 ▲▲▲
 
     try {
-      const response = await fetch('http://localhost:5000/api/schedule', {
+      const response = await fetch(`${API_BASE_URL}/api/schedule`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
