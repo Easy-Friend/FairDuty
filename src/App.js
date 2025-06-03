@@ -123,6 +123,13 @@ function App() {
   };
 
   const handleGenerateSchedule = async () => {
+    if (scheduleResult) { 
+      const userConfirmed = window.confirm(t('confirmations.regenerateSchedule', '다운로드 하지 않은 당직표는 사라집니다. 계속 진행하시겠습니까?'));
+      if (!userConfirmed) {
+        return; // 사용자가 "취소"를 누르면 함수를 여기서 종료
+      }
+    }
+
     if (!startDate || !endDate) {
       setError(t('errors.dateRangeMissing'));
       return;
