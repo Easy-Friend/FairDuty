@@ -6,7 +6,7 @@ import random
 import numpy as np # numpy 추가 (분산 계산용)
 
 app = Flask(__name__)
-CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev/" 
+CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
 LOCALHOST_DEV_URL = "http://localhost:3000"
 
 allowed_origins = [
