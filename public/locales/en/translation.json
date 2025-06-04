@@ -46,5 +46,6 @@
   "getApp.appStore": "Download on the App Store",
   "errors.maxPeopleReached": "You can add a maximum of 10 people.",
   "confirmations.regenerateSchedule": "Any unsaved schedule will be lost. Do you want to proceed?",
-  "errors.dutyPerDayInvalid": "Duties per day must be at least 1."  
+  "errors.dutyPerDayInvalid": "Duties per day must be at least 1.",
+  "errors.duplicateName": "A person with this name already exists. Please use a different name." 
 }
