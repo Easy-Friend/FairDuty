@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">fairduty</string>
+    <string name="title_activity_main">fairduty</string>
+    <string name="package_name">fairduty.easyfriend</string>
+    <string name="custom_url_scheme">fairduty.easyfriend</string>
+</resources>

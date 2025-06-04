@@ -391,3 +391,34 @@ body {
 .app-store-button {
   background-color: #007AFF; /* 애플 앱스토어 색상 */
 }
+
+.spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  margin-left: 8px; /* 텍스트와의 간격 */
+  font-size: 1.1em; /* 이모티콘 크기 조절 */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* (선택 사항) 취소 버튼 스타일 */
+.cancel-button {
+  /* generate-button 스타일을 기본으로 가져오거나 새로 정의 */
+  background-color: #f5919b; /* 예: 빨간색 계열 */
+  color: white;
+  /* generate-button과 동일한 패딩, 보더 등 적용 */
+  padding: 12px 24px; /* generate-button과 맞추세요 */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.125em; /* generate-button과 맞추세요 */
+  transition: background-color 0.2s;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.cancel-button:hover {
+  background-color: #f04758;
+}

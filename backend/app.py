@@ -8,12 +8,14 @@ import numpy as np # numpy 추가 (분산 계산용)
 app = Flask(__name__)
 CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
 LOCALHOST_DEV_URL = "http://localhost:3000"
-
-
+CAPACITATOR_DEV_URL = "capacitor://localhost"
+ANDROID_LOCALHOST_URL = "http://localhost"
 
 allowed_origins = [
     CLOUDFLARE_PAGES_URL,
-    LOCALHOST_DEV_URL
+    LOCALHOST_DEV_URL,
+    CAPACITATOR_DEV_URL,
+    ANDROID_LOCALHOST_URL
 ]
 
 CORS(app, 
@@ -42,7 +44,7 @@ def generate_dates_revised(start_str, end_str, extra_holidays_set):
 
 # --- 분산 계산 함수 ---
 def calculate_variances(summary_data, people_names_list):
-    person_to_duties = {item['person']: item for item in summary_data}
+    person_to_duties = {item['person']: item for item in summary_data} 
     
     weekday_duties = np.array([person_to_duties.get(p, {}).get('weekdayDuties', 0) for p in people_names_list])
     weekend_holiday_duties = np.array([person_to_duties.get(p, {}).get('weekendOrHolidayDuties', 0) for p in people_names_list])
@@ -286,8 +288,5 @@ def create_schedule_route():
 import os
 
 if __name__ == '__main__':
-    # Heroku는 PORT 환경 변수를 사용
-    # port = int(os.environ.get('PORT', 5000)) 
-    # app.logger.setLevel("INFO") # DEBUG, INFO, WARNING, ERROR, CRITICAL
     port = int(os.environ.get('PORT', 5000)) 
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=True)
