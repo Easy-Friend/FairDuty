@@ -269,7 +269,7 @@ def create_schedule_route():
         duty_per_day,
         no_consecutive_frontend, # 프론트엔드 값 그대로 전달 (함수 내부에서 allow_consecutive로 변환)
         extra_holidays_list_input,
-        num_attempts=20 # 필요시 이 값을 조절하거나 요청 파라미터로 받을 수 있습니다.
+        num_attempts=50 # 필요시 이 값을 조절하거나 요청 파라미터로 받을 수 있습니다.
     )
 
     if final_schedule_data:
