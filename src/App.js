@@ -89,12 +89,23 @@ function App() {
   const generateButtonRef = useRef(null); // "당직표 생성" 버튼을 위한 ref 생성
 
   const handleNameKeyPress = (e) => {
-    if (e.key === 'Enter' && nameInput.trim()) {
+    const newNameTrimmed = nameInput.trim(); // 공백 제거된 새 이름
+
+    if (e.key === 'Enter' && newNameTrimmed) {
+      // 1. 최대 인원수 제한 확인 (기존 로직)
       if (people.length >= 10) {
-        setError(t('errors.maxPeopleReached', '최대 10명까지만 추가할 수 있습니다.')); // 다국어 처리된 오류 메시지
-        // setNameInput(''); // 입력창을 비울 수도 있고, 그대로 둘 수도 있습니다.
-        return; // 함수 종료하여 더 이상 추가되지 않도록 함
+        setError(t('errors.maxPeopleReached', '최대 10명까지만 추가할 수 있습니다.'));
+        return;
       }
+
+      // ▼▼▼ 2. 중복 이름 확인 로직 추가 ▼▼▼
+      // 대소문자를 구분하지 않고 비교하려면 toLowerCase() 또는 toUpperCase() 사용
+      const nameExists = people.some(person => person.name.toLowerCase() === newNameTrimmed.toLowerCase()); 
+      if (nameExists) {
+        setError(t('errors.duplicateName', '이미 같은 이름의 인원이 있습니다. 다른 이름을 사용해주세요.'));
+        return; // 함수 종료하여 추가하지 않음
+      }
+      
       setPeople((prev) => [...prev, { id: uuidv4(), name: nameInput.trim(), unavailable: [] }]);
       setNameInput('');
       setError(null);
