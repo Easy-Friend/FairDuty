@@ -40,10 +40,11 @@
   "calendarYear": "Year {{year}}",
   "calendarMonth": "Month {{month}}",
   "calendarDayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  "getApp.title": "Unlock all features for $0.99!",
-  "getApp.description": "Generate schedules for extended periods (6 weeks → 1 year) and manage more personnel (10 → 50 people).",
+  "getApp.title": "If you want the 'longer period, more people' feature... it's in the paid app! (The server is struggling...)",
+  "getApp.description": "Your $0.99 support will grow into a robust server in the future.",
   "getApp.googlePlay": "Get it on Google Play",
   "getApp.appStore": "Download on the App Store",
   "errors.maxPeopleReached": "You can add a maximum of 10 people.",
-  "confirmations.regenerateSchedule": "Any unsaved schedule will be lost. Do you want to proceed?"  
+  "confirmations.regenerateSchedule": "Any unsaved schedule will be lost. Do you want to proceed?",
+  "errors.dutyPerDayInvalid": "Duties per day must be at least 1."  
 }

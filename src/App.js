@@ -130,6 +130,14 @@ function App() {
       }
     }
 
+    const parsedDutyPerDay = parseInt(dutyPerDay, 10);
+    if (isNaN(parsedDutyPerDay) || parsedDutyPerDay < 1) {
+      setError(t('errors.dutyPerDayInvalid', '하루 당직 인원은 1명 이상이어야 합니다.'));
+      // 선택 사항: 유효하지 않은 값 입력 시 상태를 기본값 '1'로 되돌릴 수 있습니다.
+      // setDutyPerDay('1'); 
+      return; // 함수 종료
+    }
+
     if (!startDate || !endDate) {
       setError(t('errors.dateRangeMissing'));
       return;
@@ -429,9 +437,8 @@ function App() {
               id="dutyPerDayInput"
               type="number"
               value={dutyPerDay}
-              onChange={(e) => setDutyPerDay(Math.max(1, parseInt(e.target.value, 10) || 1))}
+              onChange={(e) => setDutyPerDay(e.target.value)}
               className="number-input"
-              min="1"
             />
           </div>
 
@@ -592,9 +599,9 @@ function App() {
           marginTop: '40px', 
           borderTop: '1px solid #eee' 
         }}>
-        <h3 style={{ marginBottom: '10px' }}>{t('getApp.title', '모든 기능을 경험하세요!')}</h3>
+        <h3 style={{ marginBottom: '10px' }}>{t('getApp.title', '"더 길게, 더 많은 사람" 기능을 원하신다면... 유료앱으로! (서버가 힘들어해요...)')}</h3>
         <p style={{ marginBottom: '20px', fontSize: '0.95em', color: '#444' }}>
-          {t('getApp.description', '더 많은 고급 기능과 편리한 모바일 경험을 원하시면 지금 바로 앱을 다운로드하세요.')}
+          {t('getApp.description', '당신의 $0.99 후원은 훗날 자라서 튼튼한 서버가 됩니다')}
         </p>
         <div>
           <a 
