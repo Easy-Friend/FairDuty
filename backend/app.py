@@ -9,6 +9,8 @@ app = Flask(__name__)
 CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
 LOCALHOST_DEV_URL = "http://localhost:3000"
 
+
+
 allowed_origins = [
     CLOUDFLARE_PAGES_URL,
     LOCALHOST_DEV_URL

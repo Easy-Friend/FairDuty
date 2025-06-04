@@ -61,7 +61,7 @@ const calculateMaxEndDate = (selectedStartDate) => {
     return null; // 시작 날짜가 없으면 종료 날짜 제한 없음
   }
   const maxEndDate = new Date(selectedStartDate);
-  maxEndDate.setDate(selectedStartDate.getDate() + (6 * 7) - 1); 
+  maxEndDate.setDate(selectedStartDate.getDate() + (52 * 7) - 1); 
   return maxEndDate;
 };
 
@@ -90,7 +90,7 @@ function App() {
 
   const handleNameKeyPress = (e) => {
     if (e.key === 'Enter' && nameInput.trim()) {
-      if (people.length >= 10) {
+      if (people.length >= 50) {
         setError(t('errors.maxPeopleReached', '최대 10명까지만 추가할 수 있습니다.')); // 다국어 처리된 오류 메시지
         // setNameInput(''); // 입력창을 비울 수도 있고, 그대로 둘 수도 있습니다.
         return; // 함수 종료하여 더 이상 추가되지 않도록 함
@@ -591,6 +591,18 @@ function App() {
           </div>    
         </div>
       )}
+      <div className="app-store-links-container" 
+        style={{ 
+          textAlign: 'center', 
+          padding: '30px 20px', 
+          marginTop: '40px', 
+          borderTop: '1px solid #eee' 
+        }}>
+        <h3 style={{ marginBottom: '10px' }}>{t('Thanks', '구매해주셔서 감사합니다. 공정성을 높이기 위해 더 노력하겠습니다.')}</h3>
+        <p style={{ marginBottom: '20px', fontSize: '0.95em', color: '#444' }}>
+          {t('Requests', '요청사항/개선사항은 lotusrock00@naver.com 으로 보내주시면 감사드리겠습니다.')}
+        </p>
+      </div>
 
       {/* <div className="app-store-links-container" 
         style={{ 
