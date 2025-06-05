@@ -61,7 +61,7 @@ const calculateMaxEndDate = (selectedStartDate) => {
     return null; // 시작 날짜가 없으면 종료 날짜 제한 없음
   }
   const maxEndDate = new Date(selectedStartDate);
-  maxEndDate.setDate(selectedStartDate.getDate() + (5 * 7) - 1); 
+  maxEndDate.setDate(selectedStartDate.getDate() + (8 * 7) - 1); 
   return maxEndDate;
 };
 
@@ -78,7 +78,8 @@ function App() {
   const [extraHolidays, setExtraHolidays] = useState([]);
   const [scheduleResult, setScheduleResult] = useState(null);
   const [personColorMap, setPersonColorMap] = useState({}); 
-  
+
+  const abortControllerRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -87,6 +88,15 @@ function App() {
   : [];
 
   const generateButtonRef = useRef(null); // "당직표 생성" 버튼을 위한 ref 생성
+
+  const handleCancelRequest = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort(); // fetch 요청 중단
+      // setError(t('errors.requestAborted', '요청이 취소되었습니다.')); // 여기서 상태 변경 가능
+      // setLoading(false); // fetch의 finally 블록에서 처리됨
+      console.log("Request cancellation initiated by user.");
+    }
+  };
 
   const handleNameKeyPress = (e) => {
     const newNameTrimmed = nameInput.trim(); // 공백 제거된 새 이름
@@ -105,7 +115,6 @@ function App() {
         setError(t('errors.duplicateName', '이미 같은 이름의 인원이 있습니다. 다른 이름을 사용해주세요.'));
         return; // 함수 종료하여 추가하지 않음
       }
-      
       setPeople((prev) => [...prev, { id: uuidv4(), name: nameInput.trim(), unavailable: [] }]);
       setNameInput('');
       setError(null);
@@ -134,6 +143,10 @@ function App() {
   };
 
   const handleGenerateSchedule = async () => {
+    if (loading) {
+        console.log("Already generating, please wait or cancel.");
+        return; 
+    }
     if (scheduleResult) { 
       const userConfirmed = window.confirm(t('confirmations.regenerateSchedule', '다운로드 하지 않은 당직표는 사라집니다. 계속 진행하시겠습니까?'));
       if (!userConfirmed) {
@@ -160,6 +173,9 @@ function App() {
     setLoading(true);
     setError(null);
     setScheduleResult(null);
+
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
 
     const API_BASE_URL = process.env.REACT_APP_API_URL; // 환경 변수 사용
     if (!API_BASE_URL) {
@@ -193,7 +209,11 @@ function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        signal: signal 
       });
+
+      abortControllerRef.current = null; 
+
       if (!response.ok) {
         const errorData = await response.json();
         // 동적 값(status)을 포함한 번역 처리
@@ -202,9 +222,15 @@ function App() {
       const data = await response.json();
       setScheduleResult(data);
     } catch (err) {
+      abortControllerRef.current = null; // 오류 발생 시에도 초기화
+      if (err.name === 'AbortError') {
+        console.log('Fetch aborted by user.');
+        setError(t('errors.requestAborted', '요청이 취소되었습니다.')); // 취소 관련 메시지 (선택적)
+      } else {
       // err.message가 백엔드에서 온 번역된 메시지일 수도 있으므로, 우선 표시
       // 그렇지 않다면 t('errors.unknown') 사용
-      setError(err.message && err.message !== t('errors.scheduleGenerationFailed', { status: '...' }) ? err.message : t('errors.unknown')); // 변경 (좀 더 견고한 오류 메시지 처리)
+      setError(err.message && err.message !== t('errors.scheduleGenerationFailed', { status: '...' }) ? err.message : t('errors.unknown')); 
+      }
     } finally {
       setLoading(false);
     }
@@ -397,6 +423,7 @@ function App() {
         <p style={{ margin: 0 }}> {/* p 태그의 기본 마진 제거 */}
           {t('appDescriptionLine1')}<br />
           {t('appDescriptionLine2')}<br />
+          {t('appDescriptionLine3')}<br />
           <span style={{ fontSize: '0.7em', color: '#777' }}>Made by EasyFriend</span> {/* "by" 라인 스타일 약간 다르게 (선택 사항) */}
         </p>
       </header>
@@ -543,14 +570,21 @@ function App() {
       </div> {/* settings-layout 끝 */}
       
       <div className="generate-button-container">
-        <button
-          ref={generateButtonRef} 
-          onClick={handleGenerateSchedule}
-          disabled={loading || !startDate || !endDate || people.length === 0}
-          className="generate-button"
-        >
-          {loading ? t('loadingMessage') : `🚀 ${t('generateButton')}`}
-        </button>
+        {loading ? (
+          <button onClick={handleCancelRequest} className="cancel-button">
+            <span className="spinner">⏳</span>
+            {t('buttons.cancelGeneration', '생성 중단')} 
+          </button>
+        ) : (
+          <button
+            ref={generateButtonRef} 
+            onClick={handleGenerateSchedule}
+            disabled={!startDate || !endDate || people.length === 0} // loading 조건 제거
+            className="generate-button"
+          >
+            🚀 {t('generateButton')}
+          </button>
+        )}
       </div>
 
       {error && (
@@ -574,34 +608,56 @@ function App() {
                 <li key={item.person} className="summary-item">
                   <span>{item.person}</span>
                   <span>
-                    {t('summaryWeekday')}: {item.weekdayDuties}, {t('summaryWeekendOrHoliday')}: {item.weekendOrHolidayDuties} ({t('summaryTotal')}: {item.weekdayDuties + item.weekendOrHolidayDuties}회)
+                    {t('summaryWeekday')}: {item.weekdayDuties}, {t('summaryWeekendOrHoliday')}: {item.weekendOrHolidayDuties} ({t('summaryTotal')}: {item.weekdayDuties + item.weekendOrHolidayDuties})
                   </span>
                 </li>
               ))}
             </ul>
           </div>
-
           <div className="buttons-container" style={{ marginTop: '25px', marginBottom: '20px', textAlign: 'center' }}>
-            <button
-              onClick={handleGenerateSchedule} // 동일한 함수 호출
-              disabled={loading || !startDate || !endDate || people.length === 0} // 동일한 비활성화 조건
-              className="generate-button" // 기존 버튼과 동일한 스타일 적용 (필요시 다른 클래스 지정 가능)
-            >
-              {loading ? t('loadingMessage') : t('remakeButtonLabel')}
-            </button>
+            {loading && scheduleResult ? ( // scheduleResult가 있을 때만 "생성 중단" 표시 (생성 중 다른 작업 방지)
+                                          // 또는 scheduleResult 조건 없이 loading만 봐도 됨
+              <button onClick={handleCancelRequest} className="cancel-button">
+                <span className="spinner">⏳</span>
+                {t('buttons.cancelGeneration', '생성 중단')}
+              </button>
+            ) : (
+              <button
+                onClick={handleGenerateSchedule} // "다시 만들기"도 동일한 생성 함수 호출
+                disabled={!startDate || !endDate || people.length === 0} // loading 조건 제거
+                className="generate-button" 
+              >
+                {t('remakeButtonLabel')}
+              </button>
+            )}
+            {/* 다운로드 버튼은 로딩 중 비활성화 또는 그대로 유지 */}
             {scheduleResult && (
               <button
                 onClick={handleDownloadImage}
-                disabled={loading}
-                className="download-button" // 새로운 클래스 추가
-                style={{ marginLeft: '10px' }} // "다시 만들기" 버튼과의 간격
+                disabled={loading} // 로딩 중에는 다운로드 비활성화
+                className="download-button"
+                style={{ marginLeft: '10px' }}
               >
-                {loading ? 'Downloading...' : '💾 Download'}
+                {loading ? t('common.downloading', '처리 중...') : '💾 다운로드'}
               </button>
             )}
-          </div>    
+          </div>
+
         </div>
       )}
+
+      <div className="app-store-links-container" 
+        style={{ 
+          textAlign: 'center', 
+          padding: '30px 20px', 
+          marginTop: '40px', 
+          borderTop: '1px solid #eee' 
+        }}>
+        <h3 style={{ marginBottom: '10px' }}>{t('BetaVersion')}</h3>
+        <p style={{ marginBottom: '20px', fontSize: '0.95em', color: '#444' }}>
+          {t('BetaVersionDescription')}
+        </p>
+      </div>
 
       {/* <div className="app-store-links-container" 
         style={{ 
