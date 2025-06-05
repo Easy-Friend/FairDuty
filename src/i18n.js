@@ -9,7 +9,7 @@ i18n
   .use(LanguageDetector) // 사용자의 브라우저 언어를 감지합니다.
   .use(initReactI18next) // i18n 인스턴스를 react-i18next에 전달합니다.
   .init({
-    supportedLngs: ['ko', 'en', 'zh'], // 지원하는 언어 목록
+    supportedLngs: ['ko', 'en', 'zh', 'ja', 'es', 'pt', 'hi'], // 지원하는 언어 목록
     fallbackLng: 'en', // 감지된 언어가 지원 목록에 없거나 감지 실패 시 사용할 기본 언어
     //lng: 'ko', // 특정 언어로 고정하고 싶을 때 (테스트용)
     debug: process.env.NODE_ENV === 'development', // 개발 환경에서만 디버그 로그 출력

@@ -422,3 +422,87 @@ body {
 .cancel-button:hover {
   background-color: #f04758;
 }
+
+/* 언어 선택기를 담는 최상단 바 */
+.top-language-selector {
+  display: flex; /* 내부 wrapper를 오른쪽 정렬하기 위함 */
+  justify-content: flex-end; /* 내용을 오른쪽으로 정렬 */
+  padding: 8px 20px; /* 위아래, 좌우 여백 */
+}
+
+/* 언어 선택기 버튼과 드롭다운을 감싸는 실제 컨테이너 (ref가 달리는 곳) */
+.language-selector-wrapper {
+  position: relative; /* 드롭다운 메뉴의 기준점 */
+  display: inline-block; /* 내용만큼 크기 차지 */
+}
+
+/* 언어 선택 버튼 (드롭다운 핸들) */
+.language-selector-button {
+  background-color: transparent; /* 상단 바와 어울리도록 투명하게 */
+  border: 1px solid #ced4da; /* 테두리 약간 연하게 */
+  border-radius: 4px;
+  padding: 5px 10px; /* 작게 만들기 위해 패딩 조절 */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 0.8em; /* 작게 만들기 위해 폰트 크기 조절 */
+  color: #495057; /* 글자색 */
+}
+
+.language-selector-button:hover {
+  background-color: #e9ecef;
+}
+
+.language-selector-button .flag-icon {
+  margin-right: 6px;
+  font-size: 1.1em; /* 폰트 크기 대비 국기 크기 */
+}
+
+.language-selector-button .lang-short-name {
+  margin-right: 4px;
+  font-weight: normal; /* 너무 굵지 않게 */
+}
+
+.language-selector-button .dropdown-arrow {
+  font-size: 0.6em;
+  margin-left: 4px;
+}
+
+/* 드롭다운 메뉴 */
+.language-dropdown-menu {
+  position: absolute;
+  top: 100%; /* 버튼 바로 아래 */
+  right: 0;  /* 오른쪽 정렬 (부모 wrapper 기준) */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  list-style: none;
+  padding: 5px 0;
+  margin: 2px 0 0 0;
+  z-index: 1000;
+  min-width: 140px; /* 너비 조절 */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  font-size: 0.9em; /* 드롭다운 내 폰트 크기 (버튼보다 약간 크게) */
+}
+
+.language-dropdown-menu li {
+  padding: 7px 12px; /* 아이템 패딩 조절 */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #343a40;
+}
+
+.language-dropdown-menu li:hover {
+  background-color: #f0f0f0;
+}
+
+.language-dropdown-menu li.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.language-dropdown-menu li .flag-icon {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
