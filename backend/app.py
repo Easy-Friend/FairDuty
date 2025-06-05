@@ -8,10 +8,16 @@ import numpy as np # numpy 추가 (분산 계산용)
 app = Flask(__name__)
 CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
 LOCALHOST_DEV_URL = "http://localhost:3000"
+CAPACITATOR_DEV_URL = "capacitor://localhost"
+ANDROID_LOCALHOST_URL = "http://localhost"
+ANDROID_LOCALHOST_URL2 = "https://localhost"
 
 allowed_origins = [
     CLOUDFLARE_PAGES_URL,
-    LOCALHOST_DEV_URL
+    LOCALHOST_DEV_URL,
+    CAPACITATOR_DEV_URL,
+    ANDROID_LOCALHOST_URL,
+    ANDROID_LOCALHOST_URL2
 ]
 
 CORS(app, 
