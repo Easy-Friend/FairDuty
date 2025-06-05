@@ -638,7 +638,7 @@ function App() {
                 className="download-button"
                 style={{ marginLeft: '10px' }}
               >
-                {loading ? t('common.downloading', '처리 중...') : '💾 다운로드'}
+                {loading ? t('common.downloading', '처리 중...') : '💾 Download'}
               </button>
             )}
           </div>
