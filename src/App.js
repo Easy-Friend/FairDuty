@@ -65,6 +65,16 @@ const calculateMaxEndDate = (selectedStartDate) => {
   return maxEndDate;
 };
 
+const languageOptions = [
+    { code: 'ko', name: '한국어', shortName: 'KOR'},
+    { code: 'en', name: 'English', shortName: 'ENG'}, // 또는 🇬🇧
+    { code: 'zh', name: '中文',    shortName: 'CHN'},
+    { code: 'ja', name: '日本語',    shortName: 'JPN'},
+    { code: 'es', name: 'Español',    shortName: 'ESP'},
+    { code: 'pt', name: 'Português',    shortName: 'POR'},
+    { code: 'hi', name: 'हिन्दी',    shortName: 'HIN'},
+  ];
+
 function App() {
   const { t, i18n } = useTranslation(); // 2. useTranslation Hook 사용
   const [dateRange, setDateRange] = useState([null, null]);
@@ -82,12 +92,44 @@ function App() {
   const abortControllerRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const selectLanguage = (lng) => {
+    i18n.changeLanguage(lng); // 기존 changeLanguage 함수 사용 또는 직접 i18n.changeLanguage 호출
+    setIsDropdownOpen(false); // 언어 선택 후 드롭다운 닫기
+  };
+
+  const currentLanguage = languageOptions.find(opt => opt.code === i18n.language) || languageOptions[1]
 
   const extraHolidayHighlightConfig = extraHolidays.length > 0 
   ? [{ "highlighted-extra-holiday": extraHolidays }] 
   : [];
 
   const generateButtonRef = useRef(null); // "당직표 생성" 버튼을 위한 ref 생성
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
 
   const handleCancelRequest = () => {
     if (abortControllerRef.current) {
@@ -418,6 +460,30 @@ function App() {
 
   return (
     <div className="app-container">
+
+      <div className="top-language-selector">
+        <div className="language-selector-wrapper" ref={dropdownRef}> {/* ref를 여기에 적용 */}
+          <button onClick={toggleDropdown} className="language-selector-button">
+            <span className="lang-short-name">{currentLanguage.shortName}</span>
+            <span className="dropdown-arrow">{isDropdownOpen ? '▲' : '▼'}</span>
+          </button>
+          {isDropdownOpen && (
+            <ul className="language-dropdown-menu">
+              {languageOptions.map((option) => (
+                <li 
+                  key={option.code} 
+                  onClick={() => selectLanguage(option.code)}
+                  className={i18n.language === option.code ? 'active' : ''}
+                >
+                  <span className="flag-icon">{option.flag}</span>
+                  <span>{option.name}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
       <header className="app-header">
         <h1>⚖️ {t('appTitle')}</h1>
         <p style={{ margin: 0 }}> {/* p 태그의 기본 마진 제거 */}
