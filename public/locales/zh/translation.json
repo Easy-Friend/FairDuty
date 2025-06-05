@@ -1,6 +1,7 @@
 {
   "appDescriptionLine1": "通过多次随机组合尝试，展示最公平的结果。", 
-  "appDescriptionLine2": "这大约需要10-20秒钟。",
+  "appDescriptionLine2": "周末视为节假日，额外指定的休息日也视为公共假日",  
+  "appDescriptionLine3": "这大约需要10-20秒钟。",
   "appTitle": "公平排班",
   "settingsTitle": "排班表设置",
   "dateRangeLabel": "选择日期范围",
@@ -46,5 +47,8 @@
   "getApp.appStore": "在 App Store 上下载",
   "errors.maxPeopleReached": "最多只能添加10人。",
   "confirmations.regenerateSchedule": "未下载的排班表将会丢失。您确定要继续吗？",
-  "errors.duplicateName": "该姓名的人员已存在。请输入其他姓名。"
+  "errors.duplicateName": "该姓名的人员已存在。请输入其他姓名。",
+  "BetaVersion": "目前为测试版 — 您正在抢先体验！",
+  "BetaVersionDescription": "可配置的最长8周，最多可添加10人（我们的服务器正在成长中...）。",
+  "buttons.cancelGeneration": "停止生成"
 }

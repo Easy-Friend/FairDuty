@@ -1,6 +1,7 @@
 {
-  "appDescriptionLine1": "여러 번의 무작위 조합을 시도하여 가장 공평한 결과를 보여줍니다.", 
-  "appDescriptionLine2": "10-20초 가량 시간이 걸릴 수 있습니다.", 
+  "appDescriptionLine1": "50회의 무작위 조합을 시도하여 가장 공평한 결과를 보여줍니다.", 
+  "appDescriptionLine2": "주말은 공휴일로, 추가로 지정한 휴일도 공휴일로 취급합니다.",
+  "appDescriptionLine3": "10-20초 가량 시간이 걸릴 수 있습니다.", 
   "appTitle": "공평한 당직",
   "settingsTitle": "당직표 설정",
   "dateRangeLabel": "기간 선택",
@@ -47,5 +48,8 @@
   "errors.maxPeopleReached": "최대 10명까지만 추가할 수 있습니다.",
   "confirmations.regenerateSchedule": "다운로드 하지 않은 당직표는 사라집니다. 계속 진행하시겠습니까?",
   "errors.dutyPerDayInvalid": "하루 당직 인원은 1명 이상이어야 합니다.",
-  "errors.duplicateName": "이미 같은 이름의 인원이 있습니다. 다른 이름을 사용해주세요."
+  "errors.duplicateName": "이미 같은 이름의 인원이 있습니다. 다른 이름을 사용해주세요.",
+  "BetaVersion": "현재 베타 버전입니다 – 미리 체험해보세요",
+  "BetaVersionDescription": "설정 가능한 기간은 최대 8주, 추가할 수 있는 인원은 최대 10명입니다(서버가 자라는 중이에요...)",
+  "buttons.cancelGeneration": "생성 중단"
 }
