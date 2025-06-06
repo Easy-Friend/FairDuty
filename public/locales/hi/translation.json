@@ -15,6 +15,8 @@
   "selectedExtraHolidaysPrefix": "चुनी हुई अतिरिक्त छुट्टियां: ",
   "dutyPerDayLabel": "प्रति दिन ड्यूटी स्टाफ",
   "noConsecutiveLabel": "लगातार ड्यूटी पर प्रतिबंध",
+  "variableDutyDays.label": "परिवर्तनीय ड्यूटी संख्या वाले दिन",
+  "variableDutyDays.description": "कैलेंडर से कोई तारीख चुनें, और उस तारीख के लिए ड्यूटी कर्मियों की संख्या निर्धारित करने के लिए नीचे एक इनपुट फ़ील्ड दिखाई देगा।",
   "addPersonLabel": "व्यक्ति जोड़ें (जोड़ने के लिए Enter दबाएं)",
   "addPersonPlaceholder": "नाम दर्ज करें और Enter दबाएं",
   "removePersonButton": "हटाएं",

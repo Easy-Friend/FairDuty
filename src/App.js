@@ -89,6 +89,7 @@ function App() {
   const [offDutyDays, setOffDutyDays] = useState([]);
   const [scheduleResult, setScheduleResult] = useState(null);
   const [personColorMap, setPersonColorMap] = useState({}); 
+  const [variableDutyDays, setVariableDutyDays] = useState({});
 
   const abortControllerRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -132,7 +133,31 @@ function App() {
     };
   }, [isDropdownOpen]);
 
+  const handleVariableDutyDayChange = (date) => {
+    const dateKey = formatDateToYYYYMMDD(date); // YYYY-MM-DD 형식의 문자열 키
+    
+    setVariableDutyDays(prev => {
+      const newVariableDays = { ...prev };
+      if (newVariableDays[dateKey]) {
+        delete newVariableDays[dateKey];
+      } else {
+        // 새로 선택된 날짜면 기본값 '2'로 목록에 추가
+        // 기본 당직자 수가 1명이므로, 보통 다른 인원수는 2명 이상일 것을 가정
+        newVariableDays[dateKey] = '2'; 
+      }
+      return newVariableDays;
+    });
+  };
 
+    const handleVariableDutyCountChange = (dateKey, count) => {
+    // 0이나 빈 값 입력 시 1로 처리
+    const validatedCount = Math.max(1, parseInt(count, 10) || 1);
+    
+    setVariableDutyDays(prev => ({
+      ...prev,
+      [dateKey]: String(validatedCount) // 값을 문자열로 저장
+    }));
+  };
 
   const handleCancelRequest = () => {
     if (abortControllerRef.current) {
@@ -256,7 +281,14 @@ function App() {
       setError("API 설정 오류: 서버 주소가 정의되지 않았습니다."); // 사용자에게 알림
       setLoading(false);
       return;
-    }    
+    }
+    
+    const variableDutyDaysPayload = {};
+    Object.entries(variableDutyDays).forEach(([dateKey, count]) => {
+      if (count.trim() !== '') {
+        variableDutyDaysPayload[dateKey] = parseInt(count, 10);
+      }
+    });
 
     const payload = {
       startDate: formatDateToYYYYMMDD(startDate), // 수정된 부분
@@ -269,7 +301,8 @@ function App() {
       noConsecutive: noConsecutive,
       dutyPerDay: parseInt(dutyPerDay, 10),
       extraHolidays: (extraHolidays || []).map(date => formatDateToYYYYMMDD(date)),
-      offDutyDays: (offDutyDays || []).map(date => formatDateToYYYYMMDD(date)) 
+      offDutyDays: (offDutyDays || []).map(date => formatDateToYYYYMMDD(date)),
+      variableDutyDays: variableDutyDaysPayload
     };
 
     // ▼▼▼ 디버깅을 위해 이 부분을 추가합니다 ▼▼▼
@@ -617,6 +650,48 @@ function App() {
               onChange={() => setNoConsecutive((prev) => !prev)}
             />
             <label htmlFor="noConsecutive" className="checkbox-label">{t('noConsecutiveLabel')}</label>
+          </div>
+          <div className="setting-group">
+            <label className="label">{t('variableDutyDays.label', '당직자 수가 달라지는 날')}</label>
+            <p style={{ fontSize: '0.85em', color: '#666', marginTop: '-5px', marginBottom: '10px' }}>
+              {t('variableDutyDays.description', '달력에서 날짜를 선택하면 아래에 해당 날짜의 당직 인원을 설정하는 입력칸이 나타납니다.')}
+            </p>
+
+            {/* 날짜 선택을 위한 DatePicker */}
+            <DatePicker
+              onChange={handleVariableDutyDayChange}
+              selected={null} // 특정 날짜가 계속 선택된 상태로 보이지 않게 함
+              inline
+              monthsShown={1}
+              highlightDates={[{ "highlighted-variable-duty": Object.keys(variableDutyDays).map(d => new Date(d)) }]}
+            />
+            
+            {/* 선택된 날짜와 인원수 입력을 위한 동적 input 목록 */}
+            <div className="variable-duty-inputs" style={{ marginTop: '10px' }}>
+              {Object.entries(variableDutyDays)
+                // 날짜순으로 정렬하여 표시
+                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) 
+                .map(([dateKey, count]) => (
+                  <div key={dateKey} className="variable-duty-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                    <label htmlFor={`duty-count-${dateKey}`} style={{ marginRight: '10px' }}>
+                      {dateKey}:
+                    </label>
+                    <select
+                      id={`duty-count-${dateKey}`}
+                      value={count} // 현재 설정된 값을 선택된 값으로 표시
+                      onChange={(e) => handleVariableDutyCountChange(dateKey, e.target.value)}
+                      className="number-select" // 새로운 CSS 클래스
+                    >
+                      {/* 1부터 20까지의 숫자를 옵션으로 생성 */}
+                      {[...Array(20).keys()].map(i => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+              ))}
+            </div>
           </div>
         </div>
 

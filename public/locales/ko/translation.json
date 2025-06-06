@@ -12,11 +12,12 @@
   "extraHolidays.description.click1": "첫 번째 클릭: 추가 공휴일",
   "extraHolidays.description.click2": "두 번째 클릭: 당직 없는 날",
   "extraHolidays.description.click3": "세 번째 클릭: 선택 취소",
-
   "extraHolidaysPickerPlaceholder": "달력에서 날짜 선택",
   "selectedExtraHolidaysPrefix": "선택된 추가 공휴일: ",
   "dutyPerDayLabel": "하루 당직 인원",
   "noConsecutiveLabel": "연속 당직 제한",
+  "variableDutyDays.label": "당직자 수가 달라지는 날",
+  "variableDutyDays.description": "달력에서 날짜를 선택하면 아래에 해당 날짜의 당직 인원을 설정하는 입력칸이 나타납니다.",
   "addPersonLabel": "사람 추가 (Enter로 추가)",
   "addPersonPlaceholder": "이름 입력 후 Enter",
   "removePersonButton": "삭제",

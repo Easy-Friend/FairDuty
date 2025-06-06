@@ -15,6 +15,8 @@
   "selectedExtraHolidaysPrefix": "已选额外假期: ",
   "dutyPerDayLabel": "每日值班人数",
   "noConsecutiveLabel": "限制连续值班",
+  "variableDutyDays.label": "值班人数可变日期",
+  "variableDutyDays.description": "从日历中选择日期后，下方将出现用于设置该日值班人数的输入框。",
   "addPersonLabel": "添加人员 (按 Enter 键)",
   "addPersonPlaceholder": "输入姓名后按 Enter 键",
   "removePersonButton": "删除",
