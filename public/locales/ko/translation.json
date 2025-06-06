@@ -5,7 +5,14 @@
   "settingsTitle": "당직표 설정",
   "dateRangeLabel": "기간 선택",
   "datePickerPlaceholder": "시작일 ~ 종료일 선택",
-  "extraHolidaysLabel": "주말 외 휴일 지정 (클릭으로 선택/해제)",
+
+  "extraHolidaysLabel": "공휴일 및 당직 없는 날 지정",
+  "selectedOffDutyDaysPrefix": "당직 없는 날",
+  "extraHolidays.description.line1": "주말을 제외한 추가 공휴일 및 당직을 아무도 서지 않아도 되는 날을 지정합니다.",
+  "extraHolidays.description.click1": "첫 번째 클릭: 추가 공휴일",
+  "extraHolidays.description.click2": "두 번째 클릭: 당직 없는 날",
+  "extraHolidays.description.click3": "세 번째 클릭: 선택 취소",
+
   "extraHolidaysPickerPlaceholder": "달력에서 날짜 선택",
   "selectedExtraHolidaysPrefix": "선택된 추가 공휴일: ",
   "dutyPerDayLabel": "하루 당직 인원",
@@ -23,6 +30,7 @@
   "generateButton": "당직표 생성!",
   "remakeButtonLabel": "🔄 다시 만들기",
   "generatingButton": "생성 중...",
+  "buttons.cancelGeneration": "생성 중단",
   "errorOccurred": "오류 발생!",
   "errorDateRangeMissing": "기간을 선택해주세요.",
   "errorPeopleMissing": "사람을 추가해주세요.",

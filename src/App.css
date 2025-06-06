@@ -172,14 +172,23 @@ body {
   color: #9ca3af; /* 회색 계열 */
 }
 
-/* DatePicker 하이라이트 (App.css에서 제어하기 위해 DatePicker의 prop 수정 필요) */
+/* DatePicker 하이라이트 */
 .react-datepicker__day.highlighted-extra-holiday {
-  background-color: #fef9c3 !important; /* 연한 노랑, Tailwind: bg-yellow-100 or 200 */
+  background-color: #fef9c3 !important; 
+  color: #b91c1c !important;
+  font-weight: bold !important;
   border-radius: 50% !important;
 }
+/* 이거 지금 적용 안되는 중 !!!!!!!!!!!!!!!*/
+.react-datepicker__day.highlighted-off-duty {
+  background-color: #cff4d2 !important; 
+  color: #9b9b9b !important; 
+  border-radius: 50% !important;
+}
+
 .react-datepicker__day.highlighted-unavailable-date {
   background-color: #fecaca !important;
-  color: #b91c1c !important; /* Tailwind: text-red-700 */
+  color: #b91c1c !important; 
   font-weight: bold !important;
   border-radius: 50% !important;
 }
@@ -505,4 +514,8 @@ body {
 .language-dropdown-menu li .flag-icon {
   margin-right: 8px;
   font-size: 1.1em;
+}
+
+.off-duty-cell {
+  background-color: #cff4d2;
 }

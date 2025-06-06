@@ -86,6 +86,7 @@ function App() {
   const [noConsecutive, setNoConsecutive] = useState(true);
   const [dutyPerDay, setDutyPerDay] = useState(1);
   const [extraHolidays, setExtraHolidays] = useState([]);
+  const [offDutyDays, setOffDutyDays] = useState([]);
   const [scheduleResult, setScheduleResult] = useState(null);
   const [personColorMap, setPersonColorMap] = useState({}); 
 
@@ -107,9 +108,9 @@ function App() {
   const currentLanguage = languageOptions.find(opt => opt.code === i18n.language) || languageOptions[1]
 
 
-  const extraHolidayHighlightConfig = extraHolidays.length > 0 
-  ? [{ "highlighted-extra-holiday": extraHolidays }] 
-  : [];
+  // const extraHolidayHighlightConfig = extraHolidays.length > 0 
+  // ? [{ "highlighted-extra-holiday": extraHolidays }] 
+  // : [];
 
   const generateButtonRef = useRef(null); // "당직표 생성" 버튼을 위한 ref 생성
 
@@ -175,16 +176,23 @@ function App() {
     );
   };
 
-  const handleExtraHolidaysChange = (date) => {
-    setExtraHolidays((prevHolidays) => {
-      const dateExists = prevHolidays.some((d) => isSameDay(d, date));
-      if (dateExists) {
-        return prevHolidays.filter((d) => !isSameDay(d, date));
-      } else {
-        return date ? [...prevHolidays, date].sort((a, b) => a - b) : prevHolidays;
-      }
-    });
+  const handleMultiStateDateChange = (date) => {
+    const isExtraHoliday = extraHolidays.some(d => isSameDay(d, date));
+    const isOffDutyDay = offDutyDays.some(d => isSameDay(d, date));
+
+    if (isExtraHoliday) {
+      // 1. 현재 "추가 공휴일" -> "당직 없음"으로 변경
+      setExtraHolidays(prev => prev.filter(d => !isSameDay(d, date)));
+      setOffDutyDays(prev => [...prev, date].sort((a, b) => a - b));
+    } else if (isOffDutyDay) {
+      // 2. 현재 "당직 없음" -> 선택 취소
+      setOffDutyDays(prev => prev.filter(d => !isSameDay(d, date)));
+    } else {
+      // 3. 현재 선택 없음 -> "추가 공휴일"로 변경
+      setExtraHolidays(prev => [...prev, date].sort((a, b) => a - b));
+    }
   };
+
 
   const handleGenerateSchedule = async () => {
     if (loading) {
@@ -238,7 +246,8 @@ function App() {
       })),
       noConsecutive: noConsecutive,
       dutyPerDay: parseInt(dutyPerDay, 10),
-      extraHolidays: (extraHolidays || []).map(date => formatDateToYYYYMMDD(date)), // 추가 공휴일도 동일하게 수정
+      extraHolidays: (extraHolidays || []).map(date => formatDateToYYYYMMDD(date)),
+      offDutyDays: (offDutyDays || []).map(date => formatDateToYYYYMMDD(date)) 
     };
 
     // ▼▼▼ 디버깅을 위해 이 부분을 추가합니다 ▼▼▼
@@ -326,6 +335,7 @@ function App() {
       dutyRosterMap[item.date] = typeof item.duty === 'string' ? item.duty.split(',').map(s => s.trim()).filter(s => s) : [];
     });
     const extraHolidaysSet = new Set(extraHolidays.map(d => formatDateToYYYYMMDD(d))); // YYYY-MM-DD 형식으로 비교
+    const offDutyDaysSet = new Set(offDutyDays.map(d => formatDateToYYYYMMDD(d)));
 
     // 달력 요일 이름 (번역된 값 사용)
     const dayNames = t('calendarDayNames', { returnObjects: true }) || ['일', '월', '화', '수', '목', '금', '토'];
@@ -360,6 +370,7 @@ function App() {
                 day: dayCounter, duty: duty, dayOfWeek: weekdayKorean,
                 isWeekend: dayOfWeekNum === 0 || dayOfWeekNum === 6,
                 isExtraHoliday: extraHolidaysSet.has(dateStr),
+                isOffDuty: offDutyDaysSet.has(dateStr),
                 dateStr: dateStr
               };
             }
@@ -389,9 +400,13 @@ function App() {
                     let cellClasses = "calendar-day-cell";
                     let dayNumberClasses = "day-number";
                     if (dayInfo) {
-                      if (dayInfo.isWeekend) cellClasses += " weekend-cell";
-                      if (dayInfo.isExtraHoliday) cellClasses += " extra-holiday-cell";
+                      if (dayInfo.isOffDuty) {
+                        cellClasses += " off-duty-cell"; 
+                      } else {
+                        if (dayInfo.isWeekend) cellClasses += " weekend-cell";
+                        if (dayInfo.isExtraHoliday) cellClasses += " extra-holiday-cell";
                       if (dayInfo.isWeekend || dayInfo.isExtraHoliday) dayNumberClasses += " red-text";
+                      }
                     } else {
                       cellClasses += " empty-cell";
                     }
@@ -404,7 +419,7 @@ function App() {
                               <div className="duty-personnel-list">
                                 {dayInfo.duty
                                   .slice() // 원본 배열 변경 방지를 위해 복사본 생성 (선택 사항이지만 안전함)
-                                  .sort((a, b) => a.localeCompare(b, 'ko')) // 'ko' 로케일을 사용하여 한국어 기준으로 정렬
+                                  .sort((a, b) => a.localeCompare(b,  i18n.language)) // 'ko' 로케일을 사용하여 한국어 기준으로 정렬
                                   .map(name => (
                                   <div 
                                     key={name} 
@@ -462,7 +477,6 @@ function App() {
 
   return (
     <div className="app-container">
-
       <div className="top-language-selector">
         <div className="language-selector-wrapper" ref={dropdownRef}> {/* ref를 여기에 적용 */}
           <button onClick={toggleDropdown} className="language-selector-button">
@@ -477,7 +491,6 @@ function App() {
                   onClick={() => selectLanguage(option.code)}
                   className={i18n.language === option.code ? 'active' : ''}
                 >
-                  <span className="flag-icon">{option.flag}</span>
                   <span>{option.name}</span>
                 </li>
               ))}
@@ -516,24 +529,51 @@ function App() {
           
           <div className="setting-group">
             <label className="label">{t('extraHolidaysLabel')}</label>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>            
-              <DatePicker
-                selected={null}
-                onChange={handleExtraHolidaysChange}
-                highlightDates={extraHolidayHighlightConfig} 
-                dateFormat="yyyy-MM-dd"
-                placeholderText={t('extraHolidaysPickerPlaceholder')}
-                inline
-                monthsShown={1}
-                className="full-width-datepicker" // DatePicker 컨테이너에 클래스 추가
-              />
-            </div>
-            {extraHolidays.length > 0 && (
-              <div className="selected-dates-info" style={{ textAlign: 'right', marginTop: '5px' }}>
-                {t('selectedExtraHolidaysPrefix')}
-                {extraHolidays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'flex-start', /* 상단 정렬 */
+              marginTop: '5px' 
+            }}>
+              <div style={{ flex: 1, marginRight: '20px', fontSize: '0.85em', color: '#666' }}>
+                <p style={{ margin: 0 }}>
+                  {t('extraHolidays.description.line1')}
+                </p>
+                <ul style={{ paddingLeft: '20px', margin: '8px 0 0 0', listStyleType: 'disc' }}>
+                  <li>{t('extraHolidays.description.click1', '첫 번째 클릭: 추가 공휴일')}</li>
+                  <li>{t('extraHolidays.description.click2', '두 번째 클릭: 당직 없는 날')}</li>
+                  <li>{t('extraHolidays.description.click3', '세 번째 클릭: 선택 취소')}</li>
+                </ul>
               </div>
-            )}
+              <div style={{ flexShrink: 0 }}> {/* 이 컨테이너는 줄어들지 않도록 설정 */}
+                <DatePicker
+                  selected={null}
+                  onChange={handleMultiStateDateChange}
+                  highlightDates={[
+                    { "highlighted-extra-holiday": extraHolidays },
+                    { "highlighted-off-duty": offDutyDays }
+                  ]}
+                  inline
+                  monthsShown={1}
+                  className="full-width-datepicker" // DatePicker 컨테이너에 클래스 추가
+                />
+                {extraHolidays.length > 0 && (
+                  <div className="selected-dates-info" style={{ textAlign: 'right', marginTop: '5px' }}>
+                    {t('selectedExtraHolidaysPrefix')}
+                    {extraHolidays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+                  </div>
+                )}
+                {offDutyDays.length > 0 && (
+                  <div 
+                    className="selected-dates-info" 
+                    style={{ textAlign: 'right', marginTop: '5px' }} 
+                  >
+                    {t('selectedOffDutyDaysPrefix')}
+                    {offDutyDays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="setting-group">
@@ -601,7 +641,7 @@ function App() {
                       <>
                         {t('selectedUnavailableDatesPrefix')}
                         <span className="unavailable-dates-text">
-                          {person.unavailable.map(date => date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })).join(', ')}
+                          {person.unavailable.map(date => date.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
                         </span>
                       </>
                     ) : (
@@ -639,7 +679,7 @@ function App() {
       <div className="generate-button-container">
         {loading ? (
           <button onClick={handleCancelRequest} className="cancel-button">
-            <span className="spinner">⏳</span>
+            <span className="spinner">⏳ </span>
             {t('buttons.cancelGeneration', '생성 중단')} 
           </button>
         ) : (
