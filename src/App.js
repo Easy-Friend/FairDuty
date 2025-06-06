@@ -137,15 +137,12 @@ function App() {
   const handleCancelRequest = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort(); // fetch 요청 중단
-      // setError(t('errors.requestAborted', '요청이 취소되었습니다.')); // 여기서 상태 변경 가능
-      // setLoading(false); // fetch의 finally 블록에서 처리됨
       console.log("Request cancellation initiated by user.");
     }
   };
 
   const handleNameKeyPress = (e) => {
     const newNameTrimmed = nameInput.trim(); // 공백 제거된 새 이름
-
     if (e.key === 'Enter' && newNameTrimmed) {
       // 1. 최대 인원수 제한 확인 (기존 로직)
       if (people.length >= 50) {
@@ -160,7 +157,7 @@ function App() {
         setError(t('errors.duplicateName', '이미 같은 이름의 인원이 있습니다. 다른 이름을 사용해주세요.'));
         return; // 함수 종료하여 추가하지 않음
       }
-      setPeople((prev) => [...prev, { id: uuidv4(), name: nameInput.trim(), unavailable: [] }]);
+      setPeople((prev) => [...prev, { id: uuidv4(), name: nameInput.trim(), unavailable: [], mustDuty: [] }]);
       setNameInput('');
       setError(null);
     }
@@ -170,9 +167,33 @@ function App() {
     setPeople((prev) => prev.filter(person => person.id !== idToRemove));
   };
 
-  const handleUnavailableChange = (id, dates) => {
-    setPeople((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, unavailable: dates } : p))
+  const handlePersonDateChange = (personId, date) => {
+    setPeople(prevPeople =>
+      prevPeople.map(person => {
+        if (person.id === personId) {
+          // isSameDay 헬퍼 함수를 사용하여 각 배열에 날짜가 있는지 확인
+          const isUnavailable = (person.unavailable || []).some(d => isSameDay(d, date));
+          const isMustDuty = (person.mustDuty || []).some(d => isSameDay(d, date));
+
+          let newUnavailable = [...(person.unavailable || [])];
+          let newMustDuty = [...(person.mustDuty || [])];
+
+          if (isUnavailable) {
+            // 1. 현재 "당직 불가" -> "꼭 당직"으로 변경
+            newUnavailable = newUnavailable.filter(d => !isSameDay(d, date));
+            newMustDuty = [...newMustDuty, date].sort((a, b) => a - b);
+          } else if (isMustDuty) {
+            // 2. 현재 "꼭 당직" -> 선택 취소
+            newMustDuty = newMustDuty.filter(d => !isSameDay(d, date));
+          } else {
+            // 3. 현재 선택 없음 -> "당직 불가"로 변경
+            newUnavailable = [...newUnavailable, date].sort((a, b) => a - b);
+          }
+          
+          return { ...person, unavailable: newUnavailable, mustDuty: newMustDuty };
+        }
+        return person;
+      })
     );
   };
 
@@ -242,7 +263,8 @@ function App() {
       endDate: formatDateToYYYYMMDD(endDate),     // 수정된 부분
       people: people.map(p => ({
         name: p.name,
-        unavailable: (p.unavailable || []).map(date => formatDateToYYYYMMDD(date)), // 불가 날짜도 동일하게 수정
+        unavailable: (p.unavailable || []).map(date => formatDateToYYYYMMDD(date)), 
+        mustDuty: (p.mustDuty || []).map(date => formatDateToYYYYMMDD(date))
       })),
       noConsecutive: noConsecutive,
       dutyPerDay: parseInt(dutyPerDay, 10),
@@ -629,10 +651,10 @@ function App() {
             {people.length === 0 && <p className="info-text">{t('addPersonFirst')}</p>}
             <div className="unavailable-dates-grid">
               {people.map((person) => {
-                const unavailableDatesForPerson = person.unavailable || [];
-                const unavailableHighlightConfig = unavailableDatesForPerson.length > 0
-                ? [{ "highlighted-unavailable-date": unavailableDatesForPerson }]
-                : [];
+                const personHighlightConfig = [
+                  { "highlighted-unavailable-date": person.unavailable || [] },
+                  { "highlighted-must-duty": person.mustDuty || [] } // ◀ "꼭 당직" 하이라이트 추가
+                ];
                 return(
                 <div key={person.id} className="person-unavailable-picker">
                   <p className="person-name-label">{person.name} - {t('unavailableDatesLabel')}</p>
@@ -647,20 +669,23 @@ function App() {
                     ) : (
                       <span className="no-dates-text">{t('noUnavailableDates')}</span>
                     )}
+                    {person.mustDuty && person.mustDuty.length > 0 && (
+                      <div className="selected-dates-info">
+                        {t('selectedMustDutyDatesPrefix')} 
+                        <span className="must-duty-dates-text"> 
+                          {person.mustDuty.map(date => date.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+                        </span>
+                      </div>
+                    )}
+
                   </div>
                   <DatePicker
                     selected={null}
                     onChange={(date) => {
                       if (!date) return;
-                      const current = person.unavailable || [];
-                      const exists = current.some((d) => isSameDay(d, date));
-                      let newDates = exists ? current.filter((d) => !isSameDay(d, date)) : [...current, date];
-                      newDates.sort((a, b) => a - b);
-                      handleUnavailableChange(person.id, newDates);
-                    }}
-                    // highlightDates={(person.unavailable || []).map(d => ({ date: d, className: 'highlighted-unavailable-date' }))}                    
-                    highlightDates={unavailableHighlightConfig} 
-
+                      handlePersonDateChange(person.id, date);
+                    }}                 
+                    highlightDates={personHighlightConfig} 
                     includeDates={startDate && endDate ? getAllDatesInRange(startDate, endDate) : undefined}
                     inline
                     monthsShown={1}

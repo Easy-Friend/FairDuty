@@ -104,10 +104,17 @@ def _solve_single_schedule_lp(
         prob += min_duties_across_people <= person_total_duties[pn]
 
     # 당직 불가일 제약
-    for pn, un_dates in unavailable_dates_map.items():
-        for un_date_str in un_dates:
-            if un_date_str in schedule_date_strings: # 스케줄 범위 내의 불가일만 처리
-                prob += duty_vars[(pn, un_date_str)] == 0, f"Unavailable_{pn}_{un_date_str.replace('-', '')}"
+    for person_data in people_data_input:
+        pn = person_data['name']
+
+        for un_date_str in person_data.get('unavailable', []):
+            if un_date_str in schedule_date_strings:
+                prob += duty_vars[(pn, un_date_str)] == 0
+
+        for must_day_str in person_data.get('mustDuty', []):
+            if must_day_str in schedule_date_strings:
+                # 해당 날짜에 해당 인원의 당직 변수 값이 1이 되도록 설정
+                prob += duty_vars[(pn, must_day_str)] == 1    
 
     # 하루당 당직 인원 제약
     for ds in schedule_date_strings:

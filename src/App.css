@@ -118,8 +118,8 @@ body {
 
 .selected-dates-info {
   margin-top: 8px;
-  font-size: 0.75em; /* Tailwind: text-xs */
-  color: #4b5563; /* Tailwind: text-gray-600 */
+  font-size: 12px; 
+  color: #4b5563; 
 }
 
 /* 사람 목록 */
@@ -166,8 +166,15 @@ body {
 
 .unavailable-dates-text {
   font-weight: 500;
-  color: #ef4444; /* 빨간색 계열 */
+  color: #ef4444; 
+  font-size: 12px;
 }
+.must-duty-dates-text {
+  color: #007bff; 
+  font-weight: 500;
+  font-size: 12px; 
+}
+
 .no-dates-text {
   color: #9ca3af; /* 회색 계열 */
 }
@@ -191,6 +198,13 @@ body {
   color: #b91c1c !important; 
   font-weight: bold !important;
   border-radius: 50% !important;
+}
+
+.react-datepicker__day.highlighted-must-duty {
+  background-color: #acdeee !important; /* 예시: 밝은 녹색 */
+  color: #07065f !important; /* 텍스트 색상 */
+  border-radius: 50% !important;
+  font-weight: bold !important;
 }
 
 
