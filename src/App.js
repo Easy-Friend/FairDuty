@@ -648,6 +648,9 @@ function App() {
 
           <div className="setting-group">
             <h2 className="sub-header">{t('unavailableDatesForPersonLabel')}</h2>
+            <p style={{ fontSize: '0.85em', color: '#666', marginTop: '-5px', marginBottom: '15px' }}>
+              {t('personUnavailable.description')}
+            </p>              
             {people.length === 0 && <p className="info-text">{t('addPersonFirst')}</p>}
             <div className="unavailable-dates-grid">
               {people.map((person) => {
@@ -657,7 +660,7 @@ function App() {
                 ];
                 return(
                 <div key={person.id} className="person-unavailable-picker">
-                  <p className="person-name-label">{person.name} - {t('unavailableDatesLabel')}</p>
+                  <p className="person-name-label">{person.name}</p>
                   <div className="selected-dates-info">
                     {person.unavailable && person.unavailable.length > 0 ? (
                       <>
