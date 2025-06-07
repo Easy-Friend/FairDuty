@@ -1,6 +1,7 @@
 // src/App.js
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // DatePicker 기본 스타일 유지
@@ -77,6 +78,9 @@ const languageOptions = [
 
 function App() {
   const { t, i18n } = useTranslation(); // 2. useTranslation Hook 사용
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);  
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
   const maxSelectableEndDate = calculateMaxEndDate(startDate);
@@ -116,12 +120,6 @@ function App() {
   const generateButtonRef = useRef(null); // "당직표 생성" 버튼을 위한 ref 생성
 
   useEffect(() => {
-
-    const { t, i18n } = useTranslation();
-
-    useEffect(() => {
-      document.documentElement.lang = i18n.language;
-    }, [i18n.language]);
     
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
