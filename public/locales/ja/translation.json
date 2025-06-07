@@ -1,6 +1,6 @@
 {
-  "seo.title": "公平な自動当直表ジェネレーター",
-  "seo.description": "複雑な当直スケジュールを、FairDutyで簡単かつ公平に作成しましょう。",
+  "seo.title": "FairDuty - 公平な当番表を自動作成",
+  "seo.description": "複雑な当番スケジュールを、FairDutyで簡単かつ公平に管理。数回のクリックだけで、最適な当番表を自動で作成します。",
   "appDescriptionLine1": "複数回のランダムな組み合わせを試行し、最も公平な結果を表示します。",
   "appDescriptionLine2": "10〜20秒ほど時間がかかる場合があります。",
   "appTitle": "公平な当番表",
