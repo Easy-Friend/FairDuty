@@ -6,7 +6,8 @@ import random
 import numpy as np 
 
 app = Flask(__name__)
-CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
+CLOUDFLARE_PAGES_URL = "https://fairduty.work" 
+CLOUDFLARE_PAGES_URL2 = "https://www.fairduty.work" 
 LOCALHOST_DEV_URL = "http://localhost:3000"
 CAPACITATOR_DEV_URL = "capacitor://localhost"
 ANDROID_LOCALHOST_URL = "http://localhost"
