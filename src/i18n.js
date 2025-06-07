@@ -28,7 +28,7 @@ i18n
 
     // react-i18next 기본 설정
     react: {
-      useSuspense: false, // true로 하면 번역 로딩 중 Suspense 사용 (지금은 false로 단순하게)
+      useSuspense: true, // true로 하면 번역 로딩 중 Suspense 사용 (지금은 false로 단순하게)
     },
   });
 

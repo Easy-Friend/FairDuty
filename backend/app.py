@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
-from pulp import LpProblem, LpVariable, LpMinimize, lpSum, LpInteger, LpStatusOptimal, LpStatusInfeasible, LpStatus # LpStatus 추가
+from pulp import LpProblem, LpVariable, LpMinimize, lpSum, LpInteger, LpStatusOptimal, LpStatusInfeasible, LpStatus 
 import random
-import numpy as np # numpy 추가 (분산 계산용)
+import numpy as np 
 
 app = Flask(__name__)
 CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
@@ -46,7 +46,7 @@ def generate_dates_revised(start_str, end_str, extra_holidays_set):
 
 # --- 분산 계산 함수 ---
 def calculate_variances(summary_data, people_names_list):
-    person_to_duties = {item['person']: item for item in summary_data}
+    person_to_duties = {item['person']: item for item in summary_data} 
     
     weekday_duties = np.array([person_to_duties.get(p, {}).get('weekdayDuties', 0) for p in people_names_list])
     weekend_holiday_duties = np.array([person_to_duties.get(p, {}).get('weekendOrHolidayDuties', 0) for p in people_names_list])
@@ -59,7 +59,7 @@ def calculate_variances(summary_data, people_names_list):
 # --- 코어 LP 솔버 함수 (리팩토링됨) ---
 def _solve_single_schedule_lp(
     start_date_str, end_date_str, people_data_input, duty_per_day_val, 
-    allow_consecutive_flag, extra_holidays_str_list,
+    allow_consecutive_flag, extra_holidays_str_list, off_duty_days_str_list, variable_duty_days_map,
     objective_config=None # 예: {'type': 'PRIMARY_FAIRNESS'} 또는 {'type': 'RANDOMIZED_SECONDARY', 'target_range': X}
 ):
     people_names = [p['name'] for p in people_data_input]
@@ -104,14 +104,40 @@ def _solve_single_schedule_lp(
         prob += min_duties_across_people <= person_total_duties[pn]
 
     # 당직 불가일 제약
-    for pn, un_dates in unavailable_dates_map.items():
-        for un_date_str in un_dates:
-            if un_date_str in schedule_date_strings: # 스케줄 범위 내의 불가일만 처리
-                prob += duty_vars[(pn, un_date_str)] == 0, f"Unavailable_{pn}_{un_date_str.replace('-', '')}"
+    for person_data in people_data_input:
+        pn = person_data['name']
+
+        for un_date_str in person_data.get('unavailable', []):
+            if un_date_str in schedule_date_strings:
+                prob += duty_vars[(pn, un_date_str)] == 0
+
+        for must_day_str in person_data.get('mustDuty', []):
+            if must_day_str in schedule_date_strings:
+                # 해당 날짜에 해당 인원의 당직 변수 값이 1이 되도록 설정
+                prob += duty_vars[(pn, must_day_str)] == 1    
 
     # 하루당 당직 인원 제약
     for ds in schedule_date_strings:
-        prob += lpSum(duty_vars[(pn, ds)] for pn in people_names) == duty_per_day_val, f"DutyPerDay_{ds.replace('-', '')}"
+        # 1. "당직 없음" 날짜는 인원 0명으로 제약
+        if ds in off_duty_days_str_list:
+            prob += lpSum(duty_vars[(pn, ds)] for pn in people_names) == 0
+        # 2. 인원수가 다르게 지정된 날짜는 해당 인원수로 제약
+        elif ds in variable_duty_days_map:
+            specific_count = variable_duty_days_map[ds]
+            prob += lpSum(duty_vars[(pn, ds)] for pn in people_names) == specific_count
+        # 3. 그 외 모든 날짜는 기본 인원수로 제약
+        else:
+            prob += lpSum(duty_vars[(pn, ds)] for pn in people_names) == duty_per_day_val
+    # for ds in schedule_date_strings:
+    #     if ds not in off_duty_days_str_list:
+    #         prob += lpSum(duty_vars[(pn, ds)] for pn in people_names) == duty_per_day_val
+
+    # 당직 없는 날 추가하는 조건
+    for off_day_str in off_duty_days_str_list:
+        if off_day_str in schedule_date_strings:
+            # 해당 날짜의 모든 사람의 당직 변수 합이 0이 되도록 설정
+            prob += lpSum(duty_vars[(pn, off_day_str)] for pn in people_names) == 0
+
 
     # 연속 당직 금지 제약
     if not allow_consecutive_flag:
@@ -176,7 +202,7 @@ def _solve_single_schedule_lp(
 # --- 다단계 최적화 실행 함수 ---
 def generate_schedule_multi_stage(
     start_date, end_date, people_list_input, duties_per_day, 
-    no_consecutive, extra_holidays, num_attempts=50 # 시도 횟수 기본 50
+    no_consecutive, extra_holidays, off_duty_days_list_input, variable_duty_days_map, num_attempts=50 # 시도 횟수 기본 50
 ):
     people_names_list = [p['name'] for p in people_list_input]
 
@@ -186,6 +212,8 @@ def generate_schedule_multi_stage(
         start_date, end_date, people_list_input, duties_per_day,
         not no_consecutive, # allow_consecutive_flag 로 변환
         extra_holidays,
+        off_duty_days_list_input,
+        variable_duty_days_map,
         objective_config={'type': 'PRIMARY_FAIRNESS'}
     )
 
@@ -205,8 +233,10 @@ def generate_schedule_multi_stage(
     for i in range(num_attempts):
         attempt_solution_data, attempt_status, _ = _solve_single_schedule_lp(
             start_date, end_date, people_list_input, duties_per_day,
-            not no_consecutive, # allow_consecutive_flag
+            not no_consecutive, 
             extra_holidays,
+            off_duty_days_list_input,
+            variable_duty_days_map,
             objective_config={'type': 'RANDOMIZED_SECONDARY', 'target_range': optimal_total_duty_range}
         )
 
@@ -248,6 +278,9 @@ def create_schedule_route():
     no_consecutive_frontend = data.get('noConsecutive', True) # 프론트엔드: true=연속당직금지
     duty_per_day = data.get('dutyPerDay', 1)
     extra_holidays_list_input = data.get('extraHolidays', [])
+    off_duty_days_list_input = data.get('offDutyDays', [])
+    variable_duty_days_input = data.get('variableDutyDays', {})
+
 
     if not start_date or not end_date or not people_data_input or duty_per_day < 0:
         return jsonify({"error": "필수 정보가 부족합니다. 시작일, 종료일, 인원 목록, 일일 당직자 수를 확인해주세요."}), 400
@@ -267,6 +300,20 @@ def create_schedule_route():
         empty_summary = [{"person": p['name'], "weekdayDuties": 0, "weekendOrHolidayDuties": 0} for p in people_data_input]
         return jsonify({"dutyRoster": empty_roster, "summary": empty_summary})
 
+    max_weeks = 24
+    max_people = 50
+    
+    # 2. 날짜 계산을 위해 새로운 변수 이름(예: _obj)으로 날짜 객체를 만듭니다.
+    start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+    end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
+
+    # 3. 계산에는 날짜 객체 변수를 사용합니다.
+    if (end_date_obj - start_date_obj).days > (max_weeks * 7 - 1):
+        return jsonify({"error": f"기간은 최대 {max_weeks}주까지 선택 가능합니다."}), 403
+
+    if len(people_data_input) > max_people:
+        return jsonify({"error": f"인원은 최대 {max_people}명까지 추가 가능합니다."}), 403
+
     # 다단계 최적화 함수 호출
     final_schedule_data, status_message = generate_schedule_multi_stage(
         start_date,
@@ -275,6 +322,8 @@ def create_schedule_route():
         duty_per_day,
         no_consecutive_frontend, # 프론트엔드 값 그대로 전달 (함수 내부에서 allow_consecutive로 변환)
         extra_holidays_list_input,
+        off_duty_days_list_input,
+        variable_duty_days_input,
         num_attempts=50 # 필요시 이 값을 조절하거나 요청 파라미터로 받을 수 있습니다.
     )
 
@@ -290,8 +339,5 @@ def create_schedule_route():
 import os
 
 if __name__ == '__main__':
-    # Heroku는 PORT 환경 변수를 사용
-    # port = int(os.environ.get('PORT', 5000)) 
-    # app.logger.setLevel("INFO") # DEBUG, INFO, WARNING, ERROR, CRITICAL
     port = int(os.environ.get('PORT', 5000)) 
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=True)

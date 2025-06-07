@@ -118,8 +118,8 @@ body {
 
 .selected-dates-info {
   margin-top: 8px;
-  font-size: 0.75em; /* Tailwind: text-xs */
-  color: #4b5563; /* Tailwind: text-gray-600 */
+  font-size: 12px; 
+  color: #4b5563; 
 }
 
 /* 사람 목록 */
@@ -166,22 +166,45 @@ body {
 
 .unavailable-dates-text {
   font-weight: 500;
-  color: #ef4444; /* 빨간색 계열 */
+  color: #ef4444; 
+  font-size: 12px;
 }
+.must-duty-dates-text {
+  color: #007bff; 
+  font-weight: 500;
+  font-size: 12px; 
+}
+
 .no-dates-text {
   color: #9ca3af; /* 회색 계열 */
 }
 
-/* DatePicker 하이라이트 (App.css에서 제어하기 위해 DatePicker의 prop 수정 필요) */
+/* DatePicker 하이라이트 */
 .react-datepicker__day.highlighted-extra-holiday {
-  background-color: #fef9c3 !important; /* 연한 노랑, Tailwind: bg-yellow-100 or 200 */
-  border-radius: 50% !important;
-}
-.react-datepicker__day.highlighted-unavailable-date {
-  background-color: #fecaca !important;
-  color: #b91c1c !important; /* Tailwind: text-red-700 */
+  background-color: #fef9c3 !important; 
+  color: #b91c1c !important;
   font-weight: bold !important;
   border-radius: 50% !important;
+}
+/* 이거 지금 적용 안되는 중 !!!!!!!!!!!!!!!*/
+.react-datepicker__day.highlighted-off-duty {
+  background-color: #cff4d2 !important; 
+  color: #9b9b9b !important; 
+  border-radius: 50% !important;
+}
+
+.react-datepicker__day.highlighted-unavailable-date {
+  background-color: #fecaca !important;
+  color: #b91c1c !important; 
+  font-weight: bold !important;
+  border-radius: 50% !important;
+}
+
+.react-datepicker__day.highlighted-must-duty {
+  background-color: #acdeee !important; /* 예시: 밝은 녹색 */
+  color: #07065f !important; /* 텍스트 색상 */
+  border-radius: 50% !important;
+  font-weight: bold !important;
 }
 
 
@@ -299,14 +322,14 @@ body {
   padding: 8px; /* Tailwind: py-2 */
   font-weight: normal;
 }
-.duty-calendar-table th.sunday-header { color: #ef4444; } /* Tailwind: text-red-600 */
-.duty-calendar-table th.saturday-header { color: #3b82f6; } /* Tailwind: text-blue-600 */
+.duty-calendar-table th.sunday-header { color: #ef4444; }
+.duty-calendar-table th.saturday-header { color: #3b82f6; } 
 
 .calendar-day-cell {
   height: 100px; /* Tailwind: h-24 md:h-28 등은 반응형 높이, 여기선 고정 */
 }
-.calendar-day-cell.weekend-cell { background-color: #f9fafb; } /* Tailwind: bg-gray-50 */
-.calendar-day-cell.extra-holiday-cell { background-color: #fef3c7; } /* Tailwind: bg-yellow-100 */
+.calendar-day-cell.weekend-cell { background-color: #ffefef; } 
+.calendar-day-cell.extra-holiday-cell { background-color: #ffefef; } 
 .calendar-day-cell.empty-cell { background-color: #f9fafb; }
 
 .day-number {
@@ -505,4 +528,30 @@ body {
 .language-dropdown-menu li .flag-icon {
   margin-right: 8px;
   font-size: 1.1em;
+}
+
+.off-duty-cell {
+  background-color: #f0fff0;
+}
+
+.react-datepicker__day.highlighted-variable-duty {
+  background-color: #e0e7ff !important; /* 예시: 연한 보라색 */
+  color: #3730a3 !important;
+  border-radius: 50% !important;
+}
+
+.number-select {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 0.9em;
+  width: 70px; /* 기존 input 너비와 비슷하게 또는 적절하게 조절 */
+  cursor: pointer;
+}
+
+.number-select:focus {
+  outline: none;
+  border-color: #007bff; /* 포커스 시 테두리 색상 변경 */
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* 포커스 시 그림자 효과 */
 }
