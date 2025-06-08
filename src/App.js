@@ -175,8 +175,8 @@ function App() {
     const newNameTrimmed = nameInput.trim(); // 공백 제거된 새 이름
     if (e.key === 'Enter' && newNameTrimmed) {
       // 1. 최대 인원수 제한 확인 (기존 로직)
-      if (people.length >= 50) {
-        setError(t('errors.maxPeopleReached', '최대 50명까지만 추가할 수 있습니다.'));
+      if (people.length >= 20) {
+        setError(t('errors.maxPeopleReached', '최대 20명까지만 추가할 수 있습니다.'));
         return;
       }
 
@@ -710,7 +710,7 @@ function App() {
                 onKeyDown={handleNameKeyPress}
                 className="text-input"
                 placeholder={t('addPersonPlaceholder')}
-                disabled={people.length >= 10} 
+                disabled={people.length >= 20} 
               />
               <div className="people-list">
                 {people.map((person) => (
