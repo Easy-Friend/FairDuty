@@ -6,7 +6,8 @@ import random
 import numpy as np 
 
 app = Flask(__name__)
-CLOUDFLARE_PAGES_URL = "https://fairduty-beta.pages.dev" 
+CLOUDFLARE_PAGES_URL = "https://fairduty.work" 
+CLOUDFLARE_PAGES_URL2 = "https://www.fairduty.work" 
 LOCALHOST_DEV_URL = "http://localhost:3000"
 CAPACITATOR_DEV_URL = "capacitor://localhost"
 ANDROID_LOCALHOST_URL = "http://localhost"
@@ -14,6 +15,7 @@ ANDROID_LOCALHOST_URL2 = "https://localhost"
 
 allowed_origins = [
     CLOUDFLARE_PAGES_URL,
+    CLOUDFLARE_PAGES_URL2,
     LOCALHOST_DEV_URL,
     CAPACITATOR_DEV_URL,
     ANDROID_LOCALHOST_URL,
@@ -281,14 +283,6 @@ def create_schedule_route():
     off_duty_days_list_input = data.get('offDutyDays', [])
     variable_duty_days_input = data.get('variableDutyDays', {})
 
-    max_weeks = 24
-    max_people = 50
-    start_date = datetime.strptime(data.get('startDate'), "%Y-%m-%d").date()
-    end_date = datetime.strptime(data.get('endDate'), "%Y-%m-%d").date()
-    if (end_date - start_date).days > (max_weeks * 7 - 1):
-        return jsonify({"error": f"기간은 최대 {max_weeks}주까지 선택 가능합니다."}), 403 # 403 Forbidden
-    if len(data.get('people', [])) > max_people:
-        return jsonify({"error": f"인원은 최대 {max_people}명까지 추가 가능합니다."}), 403
 
     if not start_date or not end_date or not people_data_input or duty_per_day < 0:
         return jsonify({"error": "필수 정보가 부족합니다. 시작일, 종료일, 인원 목록, 일일 당직자 수를 확인해주세요."}), 400
@@ -307,6 +301,20 @@ def create_schedule_route():
         empty_roster = [{"date": d["date"], "weekday": ["월","화","수","목","금","토","일"][d["weekday"]], "duty": ""} for d in date_list_for_empty]
         empty_summary = [{"person": p['name'], "weekdayDuties": 0, "weekendOrHolidayDuties": 0} for p in people_data_input]
         return jsonify({"dutyRoster": empty_roster, "summary": empty_summary})
+
+    max_weeks = 28
+    max_people = 50
+    
+    # 2. 날짜 계산을 위해 새로운 변수 이름(예: _obj)으로 날짜 객체를 만듭니다.
+    start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date()
+    end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date()
+
+    # 3. 계산에는 날짜 객체 변수를 사용합니다.
+    if (end_date_obj - start_date_obj).days > (max_weeks * 7 - 1):
+        return jsonify({"error": f"기간은 최대 {max_weeks}주까지 선택 가능합니다."}), 403
+
+    if len(people_data_input) > max_people:
+        return jsonify({"error": f"인원은 최대 {max_people}명까지 추가 가능합니다."}), 403
 
     # 다단계 최적화 함수 호출
     final_schedule_data, status_message = generate_schedule_multi_stage(

@@ -1,6 +1,7 @@
 // src/App.js
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async'
 import { useTranslation } from 'react-i18next';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // DatePicker 기본 스타일 유지
@@ -61,7 +62,7 @@ const calculateMaxEndDate = (selectedStartDate) => {
     return null; // 시작 날짜가 없으면 종료 날짜 제한 없음
   }
   const maxEndDate = new Date(selectedStartDate);
-  maxEndDate.setDate(selectedStartDate.getDate() + (5 * 7) - 1); 
+  maxEndDate.setDate(selectedStartDate.getDate() + (28 * 7) - 1); 
   return maxEndDate;
 };
 
@@ -77,6 +78,9 @@ const languageOptions = [
 
 function App() {
   const { t, i18n } = useTranslation(); // 2. useTranslation Hook 사용
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);  
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
   const maxSelectableEndDate = calculateMaxEndDate(startDate);
@@ -116,6 +120,7 @@ function App() {
   const generateButtonRef = useRef(null); // "당직표 생성" 버튼을 위한 ref 생성
 
   useEffect(() => {
+    
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -531,344 +536,343 @@ function App() {
   }, [scheduleResult]); // scheduleResult가 변경될 때마다 실행
 
   return (
-    <div className="app-container">
-      <div className="top-language-selector">
-        <div className="language-selector-wrapper" ref={dropdownRef}> {/* ref를 여기에 적용 */}
-          <button onClick={toggleDropdown} className="language-selector-button">
-            <span className="lang-short-name">{currentLanguage.shortName}</span>
-            <span className="dropdown-arrow">{isDropdownOpen ? '▲' : '▼'}</span>
-          </button>
-          {isDropdownOpen && (
-            <ul className="language-dropdown-menu">
-              {languageOptions.map((option) => (
-                <li 
-                  key={option.code} 
-                  onClick={() => selectLanguage(option.code)}
-                  className={i18n.language === option.code ? 'active' : ''}
-                >
-                  <span>{option.name}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
-      <header className="app-header">
-        <h1>⚖️ {t('appTitle')}</h1>
-        <p style={{ margin: 0 }}> {/* p 태그의 기본 마진 제거 */}
-          {t('appDescriptionLine1')}<br />
-          {t('appDescriptionLine2')}<br />
-          <span style={{ fontSize: '0.7em', color: '#777' }}>Made by EasyFriend</span> {/* "by" 라인 스타일 약간 다르게 (선택 사항) */}
-        </p>
-      </header>
-
-      <div className="settings-layout"> {/* 메인 설정 영역을 감싸는 div */}
-        {/* 왼쪽 패널 */}
-        <div className="left-panel panel">
-          <div className="setting-group">
-            <label className="label">{t('dateRangeLabel')}</label>
-            <DatePicker
-              selectsRange
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(update) => setDateRange(update)}
-              dateFormat="yyyy-MM-dd"
-              placeholderText={t('datePickerPlaceholder')}
-              className="date-picker-input" // CSS에서 스타일링 할 수 있도록 클래스 추가
-              isClearable={true}
-              minDate={new Date()}
-              maxDate={maxSelectableEndDate}
-            />
-          </div>
-          
-          <div className="setting-group">
-            <label className="label">{t('extraHolidaysLabel')}</label>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'flex-start', /* 상단 정렬 */
-              marginTop: '5px' 
-            }}>
-              <div style={{ flex: 1, marginRight: '20px', fontSize: '0.85em', color: '#666' }}>
-                <p style={{ margin: 0 }}>
-                  {t('extraHolidays.description.line1')}
-                </p>
-                <ul style={{ paddingLeft: '20px', margin: '8px 0 0 0', listStyleType: 'disc' }}>
-                  <li>{t('extraHolidays.description.click1', '첫 번째 클릭: 추가 공휴일')}</li>
-                  <li>{t('extraHolidays.description.click2', '두 번째 클릭: 당직 없는 날')}</li>
-                  <li>{t('extraHolidays.description.click3', '세 번째 클릭: 선택 취소')}</li>
-                </ul>
-              </div>
-              <div style={{ flexShrink: 0 }}> {/* 이 컨테이너는 줄어들지 않도록 설정 */}
-                <DatePicker
-                  selected={null}
-                  onChange={handleMultiStateDateChange}
-                  highlightDates={[
-                    { "highlighted-extra-holiday": extraHolidays },
-                    { "highlighted-off-duty": offDutyDays }
-                  ]}
-                  inline
-                  monthsShown={1}
-                  className="full-width-datepicker" // DatePicker 컨테이너에 클래스 추가
-                />
-                {extraHolidays.length > 0 && (
-                  <div className="selected-dates-info" style={{ textAlign: 'right', marginTop: '5px' }}>
-                    {t('selectedExtraHolidaysPrefix')}
-                    {extraHolidays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
-                  </div>
-                )}
-                {offDutyDays.length > 0 && (
-                  <div 
-                    className="selected-dates-info" 
-                    style={{ textAlign: 'right', marginTop: '5px' }} 
+    <>
+      <Helmet>
+        <title>{t('seo.title', 'FairDuty - 공평한 자동 당직표 생성기')}</title>
+        <meta name="description" content={t('seo.description', '복잡한 당직 스케줄, 이제 FairDuty로 쉽고 공정하게 관리하세요.')} />
+      </Helmet>
+      <div className="app-container">
+        <div className="top-language-selector">
+          <div className="language-selector-wrapper" ref={dropdownRef}> {/* ref를 여기에 적용 */}
+            <button onClick={toggleDropdown} className="language-selector-button">
+              <span className="lang-short-name">{currentLanguage.shortName}</span>
+              <span className="dropdown-arrow">{isDropdownOpen ? '▲' : '▼'}</span>
+            </button>
+            {isDropdownOpen && (
+              <ul className="language-dropdown-menu">
+                {languageOptions.map((option) => (
+                  <li 
+                    key={option.code} 
+                    onClick={() => selectLanguage(option.code)}
+                    className={i18n.language === option.code ? 'active' : ''}
                   >
-                    {t('selectedOffDutyDaysPrefix')}
-                    {offDutyDays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="setting-group">
-            <label className="label" htmlFor="dutyPerDayInput">{t('dutyPerDayLabel')}</label>
-            <input
-              id="dutyPerDayInput"
-              type="number"
-              value={dutyPerDay}
-              onChange={(e) => setDutyPerDay(e.target.value)}
-              className="number-input"
-            />
-          </div>
-
-          <div className="setting-group checkbox-group">
-            <input
-              id="noConsecutive"
-              type="checkbox"
-              checked={noConsecutive}
-              onChange={() => setNoConsecutive((prev) => !prev)}
-            />
-            <label htmlFor="noConsecutive" className="checkbox-label">{t('noConsecutiveLabel')}</label>
-          </div>
-          <div className="setting-group">
-            <label className="label">{t('variableDutyDays.label', '당직자 수가 달라지는 날')}</label>
-            <p style={{ fontSize: '0.85em', color: '#666', marginTop: '-5px', marginBottom: '10px' }}>
-              {t('variableDutyDays.description', '달력에서 날짜를 선택하면 아래에 해당 날짜의 당직 인원을 설정하는 입력칸이 나타납니다.')}
-            </p>
-
-            {/* 날짜 선택을 위한 DatePicker */}
-            <DatePicker
-              onChange={handleVariableDutyDayChange}
-              selected={null} // 특정 날짜가 계속 선택된 상태로 보이지 않게 함
-              inline
-              monthsShown={1}
-              highlightDates={[{ "highlighted-variable-duty": Object.keys(variableDutyDays).map(d => new Date(d)) }]}
-            />
-            
-            {/* 선택된 날짜와 인원수 입력을 위한 동적 input 목록 */}
-            <div className="variable-duty-inputs" style={{ marginTop: '10px' }}>
-              {Object.entries(variableDutyDays)
-                // 날짜순으로 정렬하여 표시
-                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) 
-                .map(([dateKey, count]) => (
-                  <div key={dateKey} className="variable-duty-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                    <label htmlFor={`duty-count-${dateKey}`} style={{ marginRight: '10px' }}>
-                      {dateKey}:
-                    </label>
-                    <select
-                      id={`duty-count-${dateKey}`}
-                      value={count} // 현재 설정된 값을 선택된 값으로 표시
-                      onChange={(e) => handleVariableDutyCountChange(dateKey, e.target.value)}
-                      className="number-select" // 새로운 CSS 클래스
-                    >
-                      {/* 1부터 20까지의 숫자를 옵션으로 생성 */}
-                      {[...Array(20).keys()].map(i => (
-                        <option key={i + 1} value={i + 1}>
-                          {i + 1}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-              ))}
-            </div>
+                    <span>{option.name}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 
-        {/* 오른쪽 패널 */}
-        <div className="right-panel panel">
-          <div className="setting-group">
-            <label className="label" htmlFor="personNameInput">{t('addPersonLabel')}</label>
-            <input
-              id="personNameInput"
-              type="text"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={handleNameKeyPress}
-              className="text-input"
-              placeholder={t('addPersonPlaceholder')}
-              disabled={people.length >= 10} 
-            />
-            <div className="people-list">
-              {people.map((person) => (
-                <div key={person.id} className="person-item">
-                  <span>{person.name}</span>
-                  <button onClick={() => removePerson(person.id)} className="remove-button">
-                    {t('removePersonButton')} {/* 변경 */}
-                  </button>
-                </div>
-              ))}
+        <header className="app-header">
+          <h1>⚖️ {t('appTitle')}</h1>
+          <p style={{ margin: 0 }}> {/* p 태그의 기본 마진 제거 */}
+            {t('appDescriptionLine1')}<br />
+            {t('appDescriptionLine2')}<br />
+            <span style={{ fontSize: '0.7em', color: '#777' }}>Made by EasyFriend</span> {/* "by" 라인 스타일 약간 다르게 (선택 사항) */}
+          </p>
+        </header>
+
+        <div className="settings-layout"> {/* 메인 설정 영역을 감싸는 div */}
+          {/* 왼쪽 패널 */}
+          <div className="left-panel panel">
+            <div className="setting-group">
+              <label className="label">{t('dateRangeLabel')}</label>
+              <DatePicker
+                selectsRange
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(update) => setDateRange(update)}
+                dateFormat="yyyy-MM-dd"
+                placeholderText={t('datePickerPlaceholder')}
+                className="date-picker-input" // CSS에서 스타일링 할 수 있도록 클래스 추가
+                isClearable={true}
+                minDate={new Date()}
+                maxDate={maxSelectableEndDate}
+              />
             </div>
-          </div>
-
-          <div className="setting-group">
-            <h2 className="sub-header">{t('unavailableDatesForPersonLabel')}</h2>
-            <p style={{ fontSize: '0.85em', color: '#666', marginTop: '-5px', marginBottom: '15px' }}>
-              {t('personUnavailable.description')}
-            </p>              
-            {people.length === 0 && <p className="info-text">{t('addPersonFirst')}</p>}
-            <div className="unavailable-dates-grid">
-              {people.map((person) => {
-                const personHighlightConfig = [
-                  { "highlighted-unavailable-date": person.unavailable || [] },
-                  { "highlighted-must-duty": person.mustDuty || [] } // ◀ "꼭 당직" 하이라이트 추가
-                ];
-                return(
-                <div key={person.id} className="person-unavailable-picker">
-                  <p className="person-name-label">{person.name}</p>
-                  <div className="selected-dates-info">
-                    {person.unavailable && person.unavailable.length > 0 ? (
-                      <>
-                        {t('selectedUnavailableDatesPrefix')}
-                        <span className="unavailable-dates-text">
-                          {person.unavailable.map(date => date.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="no-dates-text">{t('noUnavailableDates')}</span>
-                    )}
-                    {person.mustDuty && person.mustDuty.length > 0 && (
-                      <div className="selected-dates-info">
-                        {t('selectedMustDutyDatesPrefix')} 
-                        <span className="must-duty-dates-text"> 
-                          {person.mustDuty.map(date => date.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
-                        </span>
-                      </div>
-                    )}
-
-                  </div>
+            
+            <div className="setting-group">
+              <label className="label">{t('extraHolidaysLabel')}</label>
+                <div style={{ marginBottom: '15px', fontSize: '0.85em', color: '#666' }}>
+                  <p style={{ margin: 0 }}>
+                    {t('extraHolidays.description.line1')}
+                  </p>
+                  <ul style={{ paddingLeft: '20px', margin: '8px 0 0 0', listStyleType: 'disc' }}>
+                    <li>{t('extraHolidays.description.click1', '첫 번째 클릭: 추가 공휴일')}</li>
+                    <li>{t('extraHolidays.description.click2', '두 번째 클릭: 당직 없는 날')}</li>
+                    <li>{t('extraHolidays.description.click3', '세 번째 클릭: 선택 취소')}</li>
+                  </ul>
+                </div>
+                <div style={{ marginTop: '15px' }}> {/* 이 컨테이너는 줄어들지 않도록 설정 */}
                   <DatePicker
                     selected={null}
-                    onChange={(date) => {
-                      if (!date) return;
-                      handlePersonDateChange(person.id, date);
-                    }}                 
-                    highlightDates={personHighlightConfig} 
-                    includeDates={startDate && endDate ? getAllDatesInRange(startDate, endDate) : undefined}
+                    onChange={handleMultiStateDateChange}
+                    highlightDates={[
+                      { "highlighted-extra-holiday": extraHolidays },
+                      { "highlighted-off-duty": offDutyDays }
+                    ]}
                     inline
                     monthsShown={1}
-                    minDate={startDate}
-                    maxDate={endDate}
                     className="full-width-datepicker" // DatePicker 컨테이너에 클래스 추가
                   />
+                  {extraHolidays.length > 0 && (
+                    <div className="selected-dates-info" style={{ marginTop: '5px' }}>
+                      {t('selectedExtraHolidaysPrefix')}
+                      {extraHolidays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+                    </div>
+                  )}
+                  {offDutyDays.length > 0 && (
+                    <div 
+                      className="selected-dates-info" 
+                      style={{ marginTop: '5px' }} 
+                    >
+                      {t('selectedOffDutyDaysPrefix')}
+                      {offDutyDays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+                    </div>
+                  )}
                 </div>
-              );
-              })}
+            </div>
+
+            <div className="setting-group">
+              <label className="label" htmlFor="dutyPerDayInput">{t('dutyPerDayLabel')}</label>
+              <input
+                id="dutyPerDayInput"
+                type="number"
+                value={dutyPerDay}
+                onChange={(e) => setDutyPerDay(e.target.value)}
+                className="number-input"
+              />
+            </div>
+
+            <div className="setting-group checkbox-group">
+              <input
+                id="noConsecutive"
+                type="checkbox"
+                checked={noConsecutive}
+                onChange={() => setNoConsecutive((prev) => !prev)}
+              />
+              <label htmlFor="noConsecutive" className="checkbox-label">{t('noConsecutiveLabel')}</label>
+            </div>
+            <div className="setting-group">
+              <label className="label">{t('variableDutyDays.label', '당직자 수가 달라지는 날')}</label>
+              <p style={{ fontSize: '0.85em', color: '#666', marginTop: '-5px', marginBottom: '10px' }}>
+                {t('variableDutyDays.description', '달력에서 날짜를 선택하면 아래에 해당 날짜의 당직 인원을 설정하는 입력칸이 나타납니다.')}
+              </p>
+
+              {/* 날짜 선택을 위한 DatePicker */}
+              <DatePicker
+                onChange={handleVariableDutyDayChange}
+                selected={null} // 특정 날짜가 계속 선택된 상태로 보이지 않게 함
+                inline
+                monthsShown={1}
+                highlightDates={[{ "highlighted-variable-duty": Object.keys(variableDutyDays).map(d => new Date(d)) }]}
+              />
+              
+              {/* 선택된 날짜와 인원수 입력을 위한 동적 input 목록 */}
+              <div className="variable-duty-inputs" style={{ marginTop: '10px' }}>
+                {Object.entries(variableDutyDays)
+                  // 날짜순으로 정렬하여 표시
+                  .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) 
+                  .map(([dateKey, count]) => (
+                    <div key={dateKey} className="variable-duty-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                      <label htmlFor={`duty-count-${dateKey}`} style={{ marginRight: '10px' }}>
+                        {dateKey}:
+                      </label>
+                      <select
+                        id={`duty-count-${dateKey}`}
+                        value={count} // 현재 설정된 값을 선택된 값으로 표시
+                        onChange={(e) => handleVariableDutyCountChange(dateKey, e.target.value)}
+                        className="number-select" // 새로운 CSS 클래스
+                      >
+                        {/* 1부터 20까지의 숫자를 옵션으로 생성 */}
+                        {[...Array(20).keys()].map(i => (
+                          <option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div> {/* 오른쪽 패널 끝 */}
-      </div> {/* settings-layout 끝 */}
-      
-      <div className="generate-button-container">
-        {loading ? (
-          <button onClick={handleCancelRequest} className="cancel-button">
-            <span className="spinner">⏳ </span>
-            {t('buttons.cancelGeneration', '생성 중단')} 
-          </button>
-        ) : (
-          <button
-            ref={generateButtonRef} 
-            onClick={handleGenerateSchedule}
-            disabled={!startDate || !endDate || people.length === 0} // loading 조건 제거
-            className="generate-button"
-          >
-            🚀 {t('generateButton')}
-          </button>
+
+          {/* 오른쪽 패널 */}
+          <div className="right-panel panel">
+            <div className="setting-group">
+              <label className="label" htmlFor="personNameInput">{t('addPersonLabel')}</label>
+              <input
+                id="personNameInput"
+                type="text"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                onKeyDown={handleNameKeyPress}
+                className="text-input"
+                placeholder={t('addPersonPlaceholder')}
+                disabled={people.length >=50} 
+              />
+              <div className="people-list">
+                {people.map((person) => (
+                  <div key={person.id} className="person-item">
+                    <span>{person.name}</span>
+                    <button onClick={() => removePerson(person.id)} className="remove-button">
+                      {t('removePersonButton')} {/* 변경 */}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="setting-group">
+              <h2 className="sub-header">{t('unavailableDatesForPersonLabel')}</h2>
+              <p style={{ fontSize: '0.85em', color: '#666', marginTop: '-5px', marginBottom: '15px' }}>
+                {t('personUnavailable.description')}
+              </p>              
+              {people.length === 0 && <p className="info-text">{t('addPersonFirst')}</p>}
+              <div className="unavailable-dates-grid">
+                {people.map((person) => {
+                  const personHighlightConfig = [
+                    { "highlighted-unavailable-date": person.unavailable || [] },
+                    { "highlighted-must-duty": person.mustDuty || [] } // ◀ "꼭 당직" 하이라이트 추가
+                  ];
+                  return(
+                  <div key={person.id} className="person-unavailable-picker">
+                    <p className="person-name-label">{person.name}</p>
+                    <div className="selected-dates-info">
+                      {person.unavailable && person.unavailable.length > 0 ? (
+                        <>
+                          {t('selectedUnavailableDatesPrefix')}
+                          <span className="unavailable-dates-text">
+                            {person.unavailable.map(date => date.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="no-dates-text">{t('noUnavailableDates')}</span>
+                      )}
+                      {person.mustDuty && person.mustDuty.length > 0 && (
+                        <div className="selected-dates-info">
+                          {t('selectedMustDutyDatesPrefix')} 
+                          <span className="must-duty-dates-text"> 
+                            {person.mustDuty.map(date => date.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
+                          </span>
+                        </div>
+                      )}
+
+                    </div>
+                    <DatePicker
+                      selected={null}
+                      onChange={(date) => {
+                        if (!date) return;
+                        handlePersonDateChange(person.id, date);
+                      }}                 
+                      highlightDates={personHighlightConfig} 
+                      includeDates={startDate && endDate ? getAllDatesInRange(startDate, endDate) : undefined}
+                      inline
+                      monthsShown={1}
+                      minDate={startDate}
+                      maxDate={endDate}
+                      className="full-width-datepicker" // DatePicker 컨테이너에 클래스 추가
+                    />
+                  </div>
+                );
+                })}
+              </div>
+            </div>
+          </div> {/* 오른쪽 패널 끝 */}
+        </div> {/* settings-layout 끝 */}
+        
+        <div className="generate-button-container">
+          {loading ? (
+            <button onClick={handleCancelRequest} className="cancel-button">
+              <span className="spinner">⏳ </span>
+              {t('buttons.cancelGeneration', '생성 중단')} 
+            </button>
+          ) : (
+            <button
+              ref={generateButtonRef} 
+              onClick={handleGenerateSchedule}
+              disabled={!startDate || !endDate || people.length === 0} // loading 조건 제거
+              className="generate-button"
+            >
+              🚀 {t('generateButton')}
+            </button>
+          )}
+        </div>
+
+        {error && (
+          <div className="error-message-box">
+            <p>{t('errorOccurred')}</p> {/* "오류 발생!" 이라는 일반적인 제목은 번역 */}
+            <p>{error}</p> {/* 백엔드에서 전달된 구체적인 오류 메시지를 그대로 표시 */}
+          </div>
         )}
-      </div>
 
-      {error && (
-        <div className="error-message-box">
-          <p>{t('errorOccurred')}</p> {/* "오류 발생!" 이라는 일반적인 제목은 번역 */}
-          <p>{error}</p> {/* 백엔드에서 전달된 구체적인 오류 메시지를 그대로 표시 */}
+        {scheduleResult && !error && (
+          <div className="results-container">
+            <h2 className="results-header">📆 {t('generatedScheduleTitle')}</h2>
+            <div className="calendar-wrapper">
+              {renderCalendar()}
+            </div>
+
+            <h2 className="results-header">📊 {t('summaryTitle')}</h2>
+            <div className="summary-wrapper">
+              <ul className="summary-list">
+                {scheduleResult.summary.map((item) => (
+                  <li key={item.person} className="summary-item">
+                    <span>{item.person}</span>
+                    <span>
+                      {t('summaryWeekday')}: {item.weekdayDuties}, {t('summaryWeekendOrHoliday')}: {item.weekendOrHolidayDuties} ({t('summaryTotal')}: {item.weekdayDuties + item.weekendOrHolidayDuties})
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="buttons-container" style={{ marginTop: '25px', marginBottom: '20px', textAlign: 'center' }}>
+              {loading && scheduleResult ? ( // scheduleResult가 있을 때만 "생성 중단" 표시 (생성 중 다른 작업 방지)
+                                            // 또는 scheduleResult 조건 없이 loading만 봐도 됨
+                <button onClick={handleCancelRequest} className="cancel-button">
+                  <span className="spinner">⏳</span>
+                  {t('buttons.cancelGeneration', '생성 중단')}
+                </button>
+              ) : (
+                <button
+                  onClick={handleGenerateSchedule} // "다시 만들기"도 동일한 생성 함수 호출
+                  disabled={!startDate || !endDate || people.length === 0} // loading 조건 제거
+                  className="generate-button" 
+                >
+                  {t('remakeButtonLabel')}
+                </button>
+              )}
+              {/* 다운로드 버튼은 로딩 중 비활성화 또는 그대로 유지 */}
+              {scheduleResult && (
+                <button
+                  onClick={handleDownloadImage}
+                  disabled={loading} // 로딩 중에는 다운로드 비활성화
+                  className="download-button"
+                  style={{ marginLeft: '10px' }}
+                >
+                  {loading ? t('common.downloading', '처리 중...') : '💾 Download'}
+                </button>
+              )}
+            </div>
+
+          </div>
+        )}
+
+        <div className="app-store-links-container" 
+          style={{ 
+            textAlign: 'center', 
+            padding: '30px 20px', 
+            marginTop: '40px', 
+            borderTop: '1px solid #eee' 
+          }}>
+          <h3 style={{ marginBottom: '10px' }}>{t('Thanks', '구매해주셔서 감사합니다. 공정성을 높이기 위해 더 노력하겠습니다.')}</h3>
+          <p style={{ marginBottom: '20px', fontSize: '0.95em', color: '#444' }}>
+            {t('Requests', '요청사항/개선사항은 lotusrock00@naver.com 으로 보내주시면 감사드리겠습니다.')}
+          </p>
         </div>
-      )}
-
-      {scheduleResult && !error && (
-        <div className="results-container">
-          <h2 className="results-header">📆 {t('generatedScheduleTitle')}</h2>
-          <div className="calendar-wrapper">
-            {renderCalendar()}
-          </div>
-
-          <h2 className="results-header">📊 {t('summaryTitle')}</h2>
-          <div className="summary-wrapper">
-            <ul className="summary-list">
-              {scheduleResult.summary.map((item) => (
-                <li key={item.person} className="summary-item">
-                  <span>{item.person}</span>
-                  <span>
-                    {t('summaryWeekday')}: {item.weekdayDuties}, {t('summaryWeekendOrHoliday')}: {item.weekendOrHolidayDuties} ({t('summaryTotal')}: {item.weekdayDuties + item.weekendOrHolidayDuties})
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="buttons-container" style={{ marginTop: '25px', marginBottom: '20px', textAlign: 'center' }}>
-            {loading && scheduleResult ? ( // scheduleResult가 있을 때만 "생성 중단" 표시 (생성 중 다른 작업 방지)
-                                          // 또는 scheduleResult 조건 없이 loading만 봐도 됨
-              <button onClick={handleCancelRequest} className="cancel-button">
-                <span className="spinner">⏳</span>
-                {t('buttons.cancelGeneration', '생성 중단')}
-              </button>
-            ) : (
-              <button
-                onClick={handleGenerateSchedule} // "다시 만들기"도 동일한 생성 함수 호출
-                disabled={!startDate || !endDate || people.length === 0} // loading 조건 제거
-                className="generate-button" 
-              >
-                {t('remakeButtonLabel')}
-              </button>
-            )}
-            {/* 다운로드 버튼은 로딩 중 비활성화 또는 그대로 유지 */}
-            {scheduleResult && (
-              <button
-                onClick={handleDownloadImage}
-                disabled={loading} // 로딩 중에는 다운로드 비활성화
-                className="download-button"
-                style={{ marginLeft: '10px' }}
-              >
-                {loading ? t('common.downloading', '처리 중...') : '💾 Download'}
-              </button>
-            )}
-          </div>
-
-        </div>
-      )}
-      <div className="app-store-links-container" 
-        style={{ 
-          textAlign: 'center', 
-          padding: '30px 20px', 
-          marginTop: '40px', 
-          borderTop: '1px solid #eee' 
-        }}>
-        <h3 style={{ marginBottom: '10px' }}>{t('Thanks', '구매해주셔서 감사합니다. 공정성을 높이기 위해 더 노력하겠습니다.')}</h3>
-        <p style={{ marginBottom: '20px', fontSize: '0.95em', color: '#444' }}>
-          {t('Requests', '요청사항/개선사항은 lotusrock00@naver.com 으로 보내주시면 감사드리겠습니다.')}
-        </p>
       </div>
-
-    </div>
+    </>
   );
 }
 
