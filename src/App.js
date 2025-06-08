@@ -594,13 +594,7 @@ function App() {
             
             <div className="setting-group">
               <label className="label">{t('extraHolidaysLabel')}</label>
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'flex-start', /* 상단 정렬 */
-                marginTop: '5px' 
-              }}>
-                <div style={{ flex: 1, marginRight: '20px', fontSize: '0.85em', color: '#666' }}>
+                <div style={{ marginBottom: '15px', fontSize: '0.85em', color: '#666' }}>
                   <p style={{ margin: 0 }}>
                     {t('extraHolidays.description.line1')}
                   </p>
@@ -610,7 +604,7 @@ function App() {
                     <li>{t('extraHolidays.description.click3', '세 번째 클릭: 선택 취소')}</li>
                   </ul>
                 </div>
-                <div style={{ flexShrink: 0 }}> {/* 이 컨테이너는 줄어들지 않도록 설정 */}
+                <div style={{ marginTop: '15px' }}> {/* 이 컨테이너는 줄어들지 않도록 설정 */}
                   <DatePicker
                     selected={null}
                     onChange={handleMultiStateDateChange}
@@ -623,7 +617,7 @@ function App() {
                     className="full-width-datepicker" // DatePicker 컨테이너에 클래스 추가
                   />
                   {extraHolidays.length > 0 && (
-                    <div className="selected-dates-info" style={{ textAlign: 'right', marginTop: '5px' }}>
+                    <div className="selected-dates-info" style={{ marginTop: '5px' }}>
                       {t('selectedExtraHolidaysPrefix')}
                       {extraHolidays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
                     </div>
@@ -631,14 +625,13 @@ function App() {
                   {offDutyDays.length > 0 && (
                     <div 
                       className="selected-dates-info" 
-                      style={{ textAlign: 'right', marginTop: '5px' }} 
+                      style={{ marginTop: '5px' }} 
                     >
                       {t('selectedOffDutyDaysPrefix')}
                       {offDutyDays.map(d => d.toLocaleDateString(i18n.language, { month: 'numeric', day: 'numeric' })).join(', ')}
                     </div>
                   )}
                 </div>
-              </div>
             </div>
 
             <div className="setting-group">
