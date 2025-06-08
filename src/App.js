@@ -61,7 +61,7 @@ const calculateMaxEndDate = (selectedStartDate) => {
     return null; // 시작 날짜가 없으면 종료 날짜 제한 없음
   }
   const maxEndDate = new Date(selectedStartDate);
-  maxEndDate.setDate(selectedStartDate.getDate() + (52 * 7) - 1); 
+  maxEndDate.setDate(selectedStartDate.getDate() + (5 * 7) - 1); 
   return maxEndDate;
 };
 
@@ -707,7 +707,7 @@ function App() {
               onKeyDown={handleNameKeyPress}
               className="text-input"
               placeholder={t('addPersonPlaceholder')}
-              disabled={people.length >= 50} 
+              disabled={people.length >= 10} 
             />
             <div className="people-list">
               {people.map((person) => (

@@ -55,6 +55,7 @@
   "getApp.googlePlay": "在 Google Play 上获取",
   "getApp.appStore": "在 App Store 上下载",
   "errors.maxPeopleReached": "最多只能添加10人。",
+  "errors.duplicateName": "该姓名的人员已存在。请输入其他姓名。",
   "confirmations.regenerateSchedule": "未下载的排班表将会丢失。您确定要继续吗？",
   "Thanks": "感谢您的购买。我们将努力进一步提高公平性",
   "Requests": "请将您的要求/改进建议发送至 lotusrock00@naver.com，谢谢。"

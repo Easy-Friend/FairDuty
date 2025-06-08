@@ -281,6 +281,15 @@ def create_schedule_route():
     off_duty_days_list_input = data.get('offDutyDays', [])
     variable_duty_days_input = data.get('variableDutyDays', {})
 
+    max_weeks = 24
+    max_people = 50
+    start_date = datetime.strptime(data.get('startDate'), "%Y-%m-%d").date()
+    end_date = datetime.strptime(data.get('endDate'), "%Y-%m-%d").date()
+    if (end_date - start_date).days > (max_weeks * 7 - 1):
+        return jsonify({"error": f"기간은 최대 {max_weeks}주까지 선택 가능합니다."}), 403 # 403 Forbidden
+    if len(data.get('people', [])) > max_people:
+        return jsonify({"error": f"인원은 최대 {max_people}명까지 추가 가능합니다."}), 403
+
     if not start_date or not end_date or not people_data_input or duty_per_day < 0:
         return jsonify({"error": "필수 정보가 부족합니다. 시작일, 종료일, 인원 목록, 일일 당직자 수를 확인해주세요."}), 400
     

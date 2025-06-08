@@ -55,6 +55,7 @@
   "getApp.googlePlay": "Google Playで入手",
   "getApp.appStore": "App Storeでダウンロード",
   "errors.maxPeopleReached": "最大10人までしか追加できません。",
+  "errors.duplicateName": "すでに同じ名前の人物がいます。別の名前を使用してください。",
   "confirmations.regenerateSchedule": "ダウンロードされていない当番表は消去されます。続行しますか？",
   "errors.dutyPerDayInvalid": "1日あたりの当番人数は1人以上である必要があります。",
   "Thanks": "ご購入いただきありがとうございます。公平性をさらに高めるために努力いたします。",

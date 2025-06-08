@@ -57,6 +57,7 @@
   "errors.maxPeopleReached": "Solo puede agregar un máximo de 10 personas.",
   "confirmations.regenerateSchedule": "El horario de turnos no descargado desaparecerá. ¿Desea continuar?",
   "errors.dutyPerDayInvalid": "El personal de turno por día debe ser al menos 1.",
+  "errors.duplicateName": "Ya existe una persona con el mismo nombre. Por favor, use un nombre diferente.",
   "Thanks": "Gracias por su compra. Nos esforzaremos por mejorar aún más la equidad.",
   "Requests": "Por favor, envíe sus sugerencias/solicitudes de mejora a lotusrock00@naver.com."
 }
