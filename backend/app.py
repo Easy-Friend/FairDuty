@@ -302,7 +302,7 @@ def create_schedule_route():
         empty_summary = [{"person": p['name'], "weekdayDuties": 0, "weekendOrHolidayDuties": 0} for p in people_data_input]
         return jsonify({"dutyRoster": empty_roster, "summary": empty_summary})
 
-    max_weeks = 24
+    max_weeks = 28
     max_people = 50
     
     # 2. 날짜 계산을 위해 새로운 변수 이름(예: _obj)으로 날짜 객체를 만듭니다.
