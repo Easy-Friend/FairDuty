@@ -60,5 +60,11 @@
   "errors.duplicateName": "该姓名的人员已存在。请输入其他姓名。",
   "confirmations.regenerateSchedule": "未下载的排班表将会丢失。您确定要继续吗？",
   "Thanks": "感谢您的购买。我们将努力进一步提高公平性",
-  "Requests": "请将您的要求/改进建议发送至 lotusrock00@naver.com，谢谢。"
+  "Requests": "请将您的要求/改进建议发送至 lotusrock00@naver.com，谢谢。",
+  "downloadFailed": "图片下载失败。请检查您的存储权限。",
+  "downloadComplete": "值班表已保存到您的“下载”文件夹中。",
+  "share.title": "分享值班表",
+  "share.text": "这是由FairDuty生成的值班表。",
+  "share.dialogTitle": "分享",
+  "buttons.export": "导出"
 }

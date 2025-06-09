@@ -61,5 +61,11 @@
   "errors.dutyPerDayInvalid": "El personal de turno por día debe ser al menos 1.",
   "errors.duplicateName": "Ya existe una persona con el mismo nombre. Por favor, use un nombre diferente.",
   "Thanks": "Gracias por su compra. Nos esforzaremos por mejorar aún más la equidad.",
-  "Requests": "Por favor, envíe sus sugerencias/solicitudes de mejora a lotusrock00@naver.com."
+  "Requests": "Por favor, envíe sus sugerencias/solicitudes de mejora a lotusrock00@naver.com.",
+  "downloadFailed": "Error al descargar la imagen. Por favor, verifique los permisos de almacenamiento.",
+  "downloadComplete": "El calendario de guardias se ha guardado en la carpeta de Descargas.",
+  "share.title": "Compartir Calendario de Guardia",
+  "share.text": "Este es el calendario de guardias generado por FairDuty.",
+  "share.dialogTitle": "Compartir",
+  "buttons.export": "Exportar"
 }

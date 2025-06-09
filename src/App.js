@@ -8,6 +8,8 @@ import 'react-datepicker/dist/react-datepicker.css'; // DatePicker 기본 스타
 import './App.css'; // 우리가 만들 App.css 파일을 불러옵니다.
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas'
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 
 //날짜를 자꾸 하루 뒤로 넣어서 해결하려고함
 function formatDateToYYYYMMDD(date) {
@@ -350,34 +352,42 @@ function App() {
   };
 
   const handleDownloadImage = async () => {
+    if (loading) return;
     setLoading(true);
+
     try {
       const resultsContainer = document.querySelector('.results-container');
-      if (!resultsContainer) {
-        console.error("Cannot find .results-container to download.");
-        setError("다운로드할 내용을 찾을 수 없습니다.");
-        return;
-      }
+      if (!resultsContainer) throw new Error("결과 컨테이너를 찾을 수 없습니다.");
 
       const canvas = await html2canvas(resultsContainer, {
-        width: resultsContainer.scrollWidth,    // 요소의 전체 너비 사용
-        height: resultsContainer.scrollHeight,  // 요소의 전체 높이 사용
-        windowWidth: resultsContainer.scrollWidth, // 캔버스 렌더링 시 사용할 창 너비
-        windowHeight: resultsContainer.scrollHeight, // 캔버스 렌더링 시 사용할 창 높이
-        backgroundColor: '#ffffff',             // 캡처 이미지의 배경색을 흰색으로 지정
+        backgroundColor: '#ffffff',
         useCORS: true,
       });
 
-      const dataURL = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = dataURL;
-      link.download = 'duty_roster.png'; // 다운로드될 파일 이름
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const base64Data = canvas.toDataURL('image/png');
+
+      // 1. 파일을 앱의 임시 캐시 폴더에 저장
+      const fileName = `duty-roster-${Date.now()}.png`;
+      const result = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Cache, // 임시 캐시 디렉터리에 저장
+      });
+
+      // 2. 저장된 파일의 URI를 사용하여 공유 기능 호출
+      await Share.share({
+        title: t('share.title', '당직표 공유'),
+        text: t('share.text', '생성된 FairDuty 당직표입니다.'),
+        url: result.uri, // 저장된 파일의 경로 전달
+        dialogTitle: t('share.dialogTitle', '공유하기')
+      });
+
     } catch (error) {
-      console.error("Error during image download:", error);
-      setError("이미지 다운로드에 실패했습니다.");
+      // Share.share()가 사용자에 의해 취소되면 'AbortError'와 유사한 에러를 발생시킬 수 있음
+      if (error.message !== "Share canceled") {
+        console.error("Error during image share:", error);
+        setError(t('downloadFailed', '이미지 처리 중 오류가 발생했습니다.'));
+      }
     } finally {
       setLoading(false);
     }
@@ -851,7 +861,7 @@ function App() {
                   className="download-button"
                   style={{ marginLeft: '10px' }}
                 >
-                  {loading ? t('common.downloading', '처리 중...') : '💾 Download'}
+                  {loading ? t('common.downloading', '처리 중...') : '📤 '+t('buttons.export', '내보내기')}
                 </button>
               )}
             </div>

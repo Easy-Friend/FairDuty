@@ -61,5 +61,11 @@
   "confirmations.regenerateSchedule": "ダウンロードされていない当番表は消去されます。続行しますか？",
   "errors.dutyPerDayInvalid": "1日あたりの当番人数は1人以上である必要があります。",
   "Thanks": "ご購入いただきありがとうございます。公平性をさらに高めるために努力いたします。",
-  "Requests": "ご要望/改善点については、lotusrock00@naver.com までお送りください。"
+  "Requests": "ご要望/改善点については、lotusrock00@naver.com までお送りください。",
+  "downloadFailed": "画像のダウンロードに失敗しました。ストレージ権限を確認してください。",
+  "downloadComplete": "当直表が「ダウンロード」フォルダに保存されました。",
+  "share.title": "当直表の共有",
+  "share.text": "FairDutyで作成された当直表です。",
+  "share.dialogTitle": "共有",
+  "buttons.export": "エクスポート"
 }

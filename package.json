@@ -5,7 +5,9 @@
   "dependencies": {
     "@capacitor/android": "^7.2.0",
     "@capacitor/core": "^7.2.0",
+    "@capacitor/filesystem": "^7.1.1",
     "@capacitor/ios": "^7.2.0",
+    "@capacitor/share": "^7.0.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -26,6 +28,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:app": "cross-env REACT_APP_MAX_WEEKS=24 REACT_APP_MAX_PEOPLE=50 npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -51,6 +54,7 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^7.2.0",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^7.0.3",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8"
   }

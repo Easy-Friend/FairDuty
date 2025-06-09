@@ -310,6 +310,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   border: 1px solid #e5e7eb; /* Tailwind: border-gray-300 */
+  table-layout: fixed;
 }
 .duty-calendar-table th, .duty-calendar-table td {
   border: 1px solid #e5e7eb;
@@ -348,8 +349,10 @@ body {
   border-radius: 4px; /* Tailwind: rounded */
   padding: 2px 6px; /* Tailwind: px-1.5 py-0.5 */
   margin-bottom: 2px; /* Tailwind: my-0.5 (y축 마진) */
-  display: inline-block; /* 여러 명일 때 옆으로 흐르도록 */
   margin-right: 2px;
+  word-wrap: break-word; /* 또는 overflow-wrap: break-word; */
+  white-space: normal; /* 줄 바꿈이 정상적으로 일어나도록 보장 */
+  line-height: 1.2; 
 }
 
 /* 요약 리스트 */

@@ -61,5 +61,11 @@
   "errors.dutyPerDayInvalid": "O número de pessoas de serviço por dia deve ser de pelo menos 1.",
   "errors.duplicateName": "Já existe uma pessoa com o mesmo nome. Por favor, use um nome diferente.",
   "Thanks": "Obrigado pela sua compra. Nós nos esforçaremos para aprimorar ainda mais a imparcialidade.",
-  "Requests": "Por favor, envie suas sugestões/solicitações de melhoria para lotusrock00@naver.com."
+  "Requests": "Por favor, envie suas sugestões/solicitações de melhoria para lotusrock00@naver.com.",
+  "downloadFailed": "Falha no download da imagem. Verifique suas permissões de armazenamento.",
+  "downloadComplete": "A escala de plantão foi salva na pasta Downloads.",
+  "share.title": "Compartilhar Escala de Plantão",
+  "share.text": "Esta é a escala de plantão gerada pelo FairDuty.",
+  "share.dialogTitle": "Compartilhar",
+  "buttons.export": "Exportar"
 }
