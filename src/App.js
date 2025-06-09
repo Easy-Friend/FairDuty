@@ -868,7 +868,8 @@ function App() {
           }}>
           <h3 style={{ marginBottom: '10px' }}>{t('BetaVersion')}</h3>
           <p style={{ marginBottom: '20px', fontSize: '0.95em', color: '#444' }}>
-            {t('BetaVersionDescription')}
+            {t('BetaVersionDescription')}<br />
+            {t('Requests')}
           </p>
         </div>
 
