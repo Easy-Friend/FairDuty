@@ -1,4 +1,6 @@
 {
+  "seo.title": "FairDuty - 公平智能的排班工具",
+  "seo.description": "复杂的排班难题？用FairDuty轻松搞定！只需几次点击，即可自动生成最公平、最优化的值班表。",
   "appDescriptionLine1": "通过多次随机组合尝试，展示最公平的结果。", 
   "appDescriptionLine2": "这大约需要10-20秒钟。",
   "appTitle": "公平排班",
