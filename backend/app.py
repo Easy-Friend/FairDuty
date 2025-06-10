@@ -46,6 +46,21 @@ def generate_dates_revised(start_str, end_str, extra_holidays_set):
         current_dt += timedelta(days=1)
     return days
 
+def calculate_duty_interval_variance(duty_dates_str):
+    """한 사람의 당직 날짜 목록을 받아 당직 간격의 분산을 계산합니다."""
+    # 당직이 1회 이하이면 분포를 따질 수 없으므로 분산은 0으로 처리
+    if len(duty_dates_str) <= 1:
+        return 0.0
+
+    # 날짜 문자열을 datetime.date 객체로 변환하고 정렬
+    duty_dates_obj = sorted([datetime.strptime(d, "%Y-%m-%d").date() for d in duty_dates_str])
+    
+    # 각 당직 사이의 간격(일)을 계산하여 리스트 생성
+    intervals = [(duty_dates_obj[i+1] - duty_dates_obj[i]).days for i in range(len(duty_dates_obj) - 1)]
+    
+    # 간격 리스트의 분산 계산
+    return np.var(np.array(intervals))
+
 # --- 분산 계산 함수 ---
 def calculate_variances(summary_data, people_names_list):
     person_to_duties = {item['person']: item for item in summary_data} 
@@ -243,14 +258,49 @@ def generate_schedule_multi_stage(
         )
 
         if attempt_status == "Optimal" and attempt_solution_data:
+            # 1. 기존: 주중/주말 당직 횟수 분산 계산
             var_weekday, var_weekend_holiday = calculate_variances(attempt_solution_data['summary'], people_names_list)
+            
+            # 2. 새로운 로직: 당직 간격 분산 계산
+            person_duty_dates = {pn: [] for pn in people_names_list}
+            for daily_duty in attempt_solution_data['dutyRoster']:
+                # duty는 쉼표로 구분된 문자열일 수 있으므로 파싱
+                assigned_people = [p.strip() for p in daily_duty['duty'].split(',') if p.strip()]
+                for person_name in assigned_people:
+                    if person_name in person_duty_dates:
+                        person_duty_dates[person_name].append(daily_duty['date'])
+
+            all_interval_variances = []
+            for person_name in people_names_list:
+                interval_variance = calculate_duty_interval_variance(person_duty_dates[person_name])
+                all_interval_variances.append(interval_variance)
+            
+            # 모든 사람의 당직 간격 분산의 평균 계산
+            avg_interval_variance = np.mean(np.array(all_interval_variances)) if all_interval_variances else 0.0
+
+            # 3. 후보군에 모든 점수 저장
             candidate_solutions.append({
-                "data": attempt_solution_data, # dutyRoster, summary 포함
+                "data": attempt_solution_data,
                 "var_weekday": var_weekday,
                 "var_weekend_holiday": var_weekend_holiday,
-                "combined_variance": var_weekday + var_weekend_holiday # 이 값을 기준으로 최종 선택
+                "combined_variance": var_weekday + var_weekend_holiday, # 기존 점수
+                "avg_interval_variance": avg_interval_variance # ◀ 새로 추가된 점수
             })
-            app.logger.info(f"  후보 {len(candidate_solutions)} 생성됨 (시도 {i+1}/{num_attempts}) - 주중분산: {var_weekday:.4f}, 주말분산: {var_weekend_holiday:.4f}")
+            
+            # 로그에 새로운 점수도 출력
+            app.logger.info(
+                f"  후보 {len(candidate_solutions)} 생성됨 (시도 {i+1}/{num_attempts}) - "
+                f"횟수분산: {var_weekday + var_weekend_holiday:.4f}, "
+                f"간격분산: {avg_interval_variance:.4f}"
+            )
+            # var_weekday, var_weekend_holiday = calculate_variances(attempt_solution_data['summary'], people_names_list)
+            # candidate_solutions.append({
+            #     "data": attempt_solution_data, # dutyRoster, summary 포함
+            #     "var_weekday": var_weekday,
+            #     "var_weekend_holiday": var_weekend_holiday,
+            #     "combined_variance": var_weekday + var_weekend_holiday # 이 값을 기준으로 최종 선택
+            # })
+            # app.logger.info(f"  후보 {len(candidate_solutions)} 생성됨 (시도 {i+1}/{num_attempts}) - 주중분산: {var_weekday:.4f}, 주말분산: {var_weekend_holiday:.4f}")
         else:
              app.logger.warning(f"  시도 {i+1}/{num_attempts} 실패 또는 최적해 없음: {attempt_status}")
 
@@ -262,12 +312,27 @@ def generate_schedule_multi_stage(
     app.logger.info(f"2단계 완료: 총 {len(candidate_solutions)}개의 후보 스케줄 생성됨")
     app.logger.info("3단계: 최종 스케줄 선택 시작")
 
-    # 3단계: 분산이 가장 낮은 스케줄 선택
-    best_candidate = min(candidate_solutions, key=lambda s: s['combined_variance'])
+    sorted_candidates = sorted(
+        candidate_solutions, 
+        key=lambda s: (s['combined_variance'], s['avg_interval_variance'])
+    )
     
-    app.logger.info(f"3단계 완료: 최종 스케줄 선택됨 (주중분산: {best_candidate['var_weekday']:.4f}, 주말분산: {best_candidate['var_weekend_holiday']:.4f})")
+    best_candidate = sorted_candidates[0]
+    
+    
+    app.logger.info(
+        f"3단계 완료: 최종 스케줄 선택됨 (종합점수 최소) - "
+        f"횟수분산: {best_candidate['combined_variance']:.4f}, "
+        f"간격분산: {best_candidate['avg_interval_variance']:.4f}"
+    )
     
     return best_candidate['data'], "OptimalMultiStage"
+    # # 3단계: 분산이 가장 낮은 스케줄 선택
+    # best_candidate = min(candidate_solutions, key=lambda s: s['combined_variance'])
+    
+    # app.logger.info(f"3단계 완료: 최종 스케줄 선택됨 (주중분산: {best_candidate['var_weekday']:.4f}, 주말분산: {best_candidate['var_weekend_holiday']:.4f})")
+    
+    # return best_candidate['data'], "OptimalMultiStage"
 
 
 # --- Flask API 엔드포인트 ---
