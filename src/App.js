@@ -62,7 +62,7 @@ const calculateMaxEndDate = (selectedStartDate) => {
     return null; // 시작 날짜가 없으면 종료 날짜 제한 없음
   }
   const maxEndDate = new Date(selectedStartDate);
-  maxEndDate.setDate(selectedStartDate.getDate() + (5 * 7) - 1); 
+  maxEndDate.setDate(selectedStartDate.getDate() + (6 * 7) - 1); 
   return maxEndDate;
 };
 

@@ -219,7 +219,7 @@ def _solve_single_schedule_lp(
 # --- 다단계 최적화 실행 함수 ---
 def generate_schedule_multi_stage(
     start_date, end_date, people_list_input, duties_per_day, 
-    no_consecutive, extra_holidays, off_duty_days_list_input, variable_duty_days_map, num_attempts=50 # 시도 횟수 기본 50
+    no_consecutive, extra_holidays, off_duty_days_list_input, variable_duty_days_map, num_attempts=70 # 시도 횟수 기본 50
 ):
     people_names_list = [p['name'] for p in people_list_input]
 
@@ -391,7 +391,7 @@ def create_schedule_route():
         extra_holidays_list_input,
         off_duty_days_list_input,
         variable_duty_days_input,
-        num_attempts=50 # 필요시 이 값을 조절하거나 요청 파라미터로 받을 수 있습니다.
+        num_attempts=70 # 필요시 이 값을 조절하거나 요청 파라미터로 받을 수 있습니다.
     )
 
     if final_schedule_data:
